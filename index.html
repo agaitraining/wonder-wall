@@ -180,8 +180,9 @@
     .tool-tile {
       border: 1px solid var(--c-border); border-radius: 10px; padding: 12px 12px 10px;
       cursor: pointer; transition: all .2s; background: transparent;
-      text-align: left; color: var(--c-text); font-family: 'Inter', sans-serif;
-      display: flex; flex-direction: column; gap: 3px; position: relative;
+      text-align: center; color: var(--c-text); font-family: 'Inter', sans-serif;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 6px; position: relative; min-height: 80px;
     }
     .tool-tile:hover { border-color: var(--c-accent-glow); background: var(--c-accent-dim); }
     .tool-tile.selected {
@@ -193,9 +194,9 @@
       position: absolute; top: 8px; right: 10px;
       font-size: 10px; color: var(--c-accent); font-weight: 700;
     }
-    .tool-tile-icon { font-size: 16px; margin-bottom: 2px; }
-    .tool-tile-name { font-size: 11.5px; font-weight: 600; line-height: 1.3; }
-    .tool-tile-desc { display: block; font-size: 10.5px; color: var(--c-muted); line-height: 1.4; margin-top: 1px; }
+    .tool-tile-icon { font-size: 22px; }
+    .tool-tile-name { font-size: 12px; font-weight: 600; line-height: 1.3; }
+    .tool-tile-desc { display: none; }
 
     /* Create session card */
     .create-card {
@@ -1000,10 +1001,10 @@
           <span class="tool-tile-desc">Capture shifts in thinking — before and after.</span>
         </button>
       </div>
-      <div style="margin-bottom:8px;font-size:12px;color:var(--c-muted);font-weight:500;letter-spacing:.04em;text-transform:uppercase;text-align:left">Name of Session / Client</div>
+      <div style="margin-bottom:8px;font-size:12px;color:var(--c-muted);font-weight:500;letter-spacing:.04em;text-transform:uppercase;text-align:left">Name of Activity</div>
       <div class="input-row">
         <input id="inp-session-name" class="field" type="text"
-          placeholder="e.g. Acme Corp — April 2026"
+          placeholder="e.g. Training Session 3 — Feelings Gauge"
           maxlength="60"
           onkeydown="if(event.key==='Enter')createSession()"
         />
