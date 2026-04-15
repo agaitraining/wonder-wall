@@ -159,7 +159,7 @@
     #page-dashboard { display: none; min-height: 100vh; }
 
     .dash-hero {
-      padding: 20px 40px 0; text-align: left;
+      padding: 20px 40px 0; text-align: center;
     }
     .dash-eyebrow {
       display: inline-block; font-size: 11px; font-weight: 600; letter-spacing: .1em;
@@ -169,19 +169,19 @@
       font-size: clamp(18px, 2.4vw, 24px); font-weight: 700; letter-spacing: -.02em; line-height: 1.2;
       background: linear-gradient(135deg, var(--c-text) 40%, var(--c-accent) 100%);
       -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-      margin-bottom: 10px;
+      margin-bottom: 12px;
     }
-    .dash-hero p { color: var(--c-muted); font-size: 13px; line-height: 1.6; max-width: 480px; margin: 0 0 16px; }
+    .dash-hero p { color: var(--c-muted); font-size: 13px; line-height: 1.6; max-width: 480px; margin: 0 auto 16px; }
 
-    /* ── Tool Picker — 6 compact tiles in a row ── */
+    /* ── Tool Picker — 3 columns with descriptions ── */
     .tool-picker {
-      display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; margin-bottom: 14px;
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 14px;
     }
     .tool-tile {
-      border: 1px solid var(--c-border); border-radius: 10px; padding: 10px 8px;
+      border: 1px solid var(--c-border); border-radius: 10px; padding: 12px 12px 10px;
       cursor: pointer; transition: all .2s; background: transparent;
-      text-align: center; color: var(--c-text); font-family: 'Inter', sans-serif;
-      display: flex; flex-direction: column; align-items: center; gap: 4px; position: relative;
+      text-align: left; color: var(--c-text); font-family: 'Inter', sans-serif;
+      display: flex; flex-direction: column; gap: 3px; position: relative;
     }
     .tool-tile:hover { border-color: var(--c-accent-glow); background: var(--c-accent-dim); }
     .tool-tile.selected {
@@ -190,17 +190,17 @@
     }
     .tool-tile.selected::after {
       content: '✓';
-      position: absolute; top: 5px; right: 7px;
+      position: absolute; top: 8px; right: 10px;
       font-size: 10px; color: var(--c-accent); font-weight: 700;
     }
-    .tool-tile-icon { font-size: 18px; }
-    .tool-tile-name { font-size: 10.5px; font-weight: 600; line-height: 1.3; }
-    .tool-tile-desc { display: none; }
+    .tool-tile-icon { font-size: 16px; margin-bottom: 2px; }
+    .tool-tile-name { font-size: 11.5px; font-weight: 600; line-height: 1.3; }
+    .tool-tile-desc { display: block; font-size: 10.5px; color: var(--c-muted); line-height: 1.4; margin-top: 1px; }
 
     /* Create session card */
     .create-card {
       background: var(--c-surface); border: 1px solid rgba(0,212,170,0.18);
-      border-radius: 16px; padding: 20px; max-width: 900px; margin: 0 auto;
+      border-radius: 16px; padding: 18px; max-width: 900px; margin: 0 auto;
       box-shadow: 0 0 40px rgba(0,212,170,0.06);
     }
     .create-card h2 {
@@ -226,38 +226,38 @@
     }
 
     /* Sessions grid */
-    .sessions-wrap { max-width: 840px; margin: 0 auto; padding: 0 40px 80px; }
+    .sessions-wrap { max-width: 900px; margin: 0 auto; padding: 10px 40px 80px; }
     .sessions-heading {
-      font-size: 13px; font-weight: 600; letter-spacing: .07em; text-transform: uppercase;
-      color: var(--c-muted); margin-bottom: 18px;
+      font-size: 11px; font-weight: 600; letter-spacing: .07em; text-transform: uppercase;
+      color: var(--c-muted2); margin-bottom: 10px;
       display: flex; align-items: center; justify-content: space-between;
     }
     .session-count {
       background: var(--c-surface); border: 1px solid var(--c-border);
-      border-radius: 100px; padding: 2px 10px; font-size: 12px; color: var(--c-muted);
+      border-radius: 100px; padding: 1px 8px; font-size: 11px; color: var(--c-muted);
     }
     .sessions-grid {
-      display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px;
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px;
     }
     .session-card {
-      background: var(--c-surface); border: 1px solid var(--c-border); border-radius: 14px;
-      padding: 20px; cursor: pointer; transition: all .2s; text-decoration: none;
-      color: inherit; display: flex; flex-direction: column; gap: 6px;
+      background: var(--c-surface); border: 1px solid var(--c-border); border-radius: 10px;
+      padding: 12px 14px; cursor: pointer; transition: all .2s; text-decoration: none;
+      color: inherit; display: flex; flex-direction: column; gap: 3px;
     }
     .session-card:hover {
-      border-color: var(--c-accent); transform: translateY(-3px);
-      box-shadow: 0 8px 28px rgba(0,212,170,0.1);
+      border-color: var(--c-accent); transform: translateY(-2px);
+      box-shadow: 0 4px 16px rgba(0,212,170,0.08);
     }
-    .sc-name { font-weight: 600; font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .sc-date { font-size: 12px; color: var(--c-muted); }
+    .sc-name { font-weight: 600; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .sc-date { font-size: 11px; color: var(--c-muted); }
     .sc-type {
-      font-size: 10px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase;
-      padding: 2px 8px; border-radius: 100px; background: var(--c-surface2); color: var(--c-muted);
-      display: inline-flex; align-items: center; gap: 4px; width: fit-content;
+      font-size: 9.5px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase;
+      padding: 1px 6px; border-radius: 100px; background: var(--c-surface2); color: var(--c-muted);
+      display: inline-flex; align-items: center; gap: 3px; width: fit-content;
     }
     .sc-count {
-      margin-top: 6px; font-size: 12px; color: var(--c-accent);
-      display: flex; align-items: center; gap: 5px;
+      margin-top: 2px; font-size: 11px; color: var(--c-accent);
+      display: flex; align-items: center; gap: 4px;
     }
     .session-card-wrap { display: flex; flex-direction: column; gap: 6px; position: relative; }
     .session-cb {
@@ -911,7 +911,7 @@
       .site-header { padding: 12px 18px; }
       .dash-hero { padding: 40px 20px 32px; }
       .create-card { padding: 22px 18px; }
-      .tool-picker { grid-template-columns: 1fr; }
+      .tool-picker { grid-template-columns: 1fr 1fr; }
       .input-row { flex-direction: column; }
       .sessions-wrap { padding: 0 18px 60px; }
       .wall-top { flex-direction: column; align-items: stretch; padding: 16px 18px; gap: 14px; }
