@@ -3,47 +3,49 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Wonder Wall · AutogenAI</title>
+  <title>AutogenAI Training Studio</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <!-- Inter: AutogenAI's official free/digital font replacement (brand guidelines) -->
-  <!-- Patrick Hand: clean, readable handwritten style for sticky notes -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Patrick+Hand&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Patrick+Hand&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet" />
 
   <style>
     /* ════════════════════════════════════════════════
        AUTOGENAI OFFICIAL BRAND TOKENS
-       Source: AutogenAI Brand Guidelines (Corebook)
-       "Under the Hood" dark palette for UI/tech use
     ════════════════════════════════════════════════ */
     :root {
-      /* ── Core backgrounds (Under the Hood scale) ── */
-      --c-bg:          #120f0c;   /* U100 — tech black                   */
-      --c-surface:     #1e1b19;   /* U95  — dark surface                 */
-      --c-surface2:    #2e2b28;   /* between U95–U50                     */
-      --c-border:      rgba(196,195,194,0.1); /* based on U25 #c4c3c2   */
-
-      /* ── Brand accents ── */
-      --c-accent:      #8ce3d0;   /* T000 — vibrant teal (UI accent)     */
+      --c-bg:          #120f0c;
+      --c-surface:     #1e1b19;
+      --c-surface2:    #2e2b28;
+      --c-border:      rgba(196,195,194,0.1);
+      --c-accent:      #8ce3d0;
       --c-accent-dim:  rgba(140,227,208,0.10);
       --c-accent-glow: rgba(140,227,208,0.22);
-      --c-teal-mid:    #579687;   /* T300 — mid teal                     */
-      --c-teal-dark:   #21493f;   /* T500 — dark teal                    */
-      --c-blue:        #7a9acc;   /* B300 — brand blue accent            */
-      --c-blue-dark:   #2b3c57;   /* B500 — deep navy blue               */
+      --c-teal-mid:    #579687;
+      --c-teal-dark:   #21493f;
+      --c-blue:        #7a9acc;
+      --c-blue-dark:   #2b3c57;
+      --c-text:        #f7f4f2;
+      --c-muted:       #888786;
+      --c-muted2:      #4a4846;
+      --note-1: #f7f4f2;
+      --note-2: #c1e5d8;
+      --note-3: #c5d8eb;
+      --note-4: #ddcdbf;
+      --note-5: #cdd0f7;
+      --note-6: #f0ccaf;
 
-      /* ── Text ── */
-      --c-text:        #f7f4f2;   /* N100 — brand cream (primary text)   */
-      --c-muted:       #888786;   /* U50  — mid grey                     */
-      --c-muted2:      #4a4846;   /* between U50–U95                     */
-
-      /* ── Sticky-note palette ── */
-      /* Using brand-adjacent tints that pop on the dark wall            */
-      --note-1: #f7f4f2;   /* N100 cream — brand neutral              */
-      --note-2: #c1e5d8;   /* T100 teal tint                          */
-      --note-3: #c5d8eb;   /* B100 blue tint                          */
-      --note-4: #ddcdbf;   /* N300 warm sand                          */
-      --note-5: #cdd0f7;   /* P100 purple tint (UI palette)           */
-      --note-6: #f0ccaf;   /* O100 warm peach (UI palette)            */
+      /* ── Garden palette (Rose, Bud, Thorn) ── */
+      --g-bg:          #0b1a0d;
+      --g-surface:     #122016;
+      --g-border:      rgba(100,180,80,0.14);
+      --g-rose:        #c4405e;
+      --g-rose-light:  #f0a0b8;
+      --g-rose-dim:    rgba(196,64,94,0.08);
+      --g-bud:         #3fab68;
+      --g-bud-light:   #90d8a8;
+      --g-bud-dim:     rgba(63,171,104,0.08);
+      --g-thorn:       #86742a;
+      --g-thorn-light: #c8a84a;
+      --g-thorn-dim:   rgba(134,116,42,0.08);
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -56,36 +58,34 @@
       -webkit-font-smoothing: antialiased;
     }
 
-    /* ── Subtle animated background grid ───────────────────────────────── */
     body::before {
       content: '';
-      position: fixed;
-      inset: 0;
+      position: fixed; inset: 0;
       background-image:
         linear-gradient(rgba(140,227,208,0.03) 1px, transparent 1px),
         linear-gradient(90deg, rgba(140,227,208,0.03) 1px, transparent 1px);
       background-size: 40px 40px;
-      pointer-events: none;
-      z-index: 0;
+      pointer-events: none; z-index: 0;
     }
 
-    /* ── Shared page sections ───────────────────────────────────────────── */
-    #page-loading,
-    #page-dashboard,
-    #page-wall { position: relative; z-index: 1; }
+    /* Garden mode overrides body background */
+    body.garden-mode { background: var(--g-bg); }
+    body.garden-mode::before {
+      background-image: radial-gradient(circle, rgba(63,171,104,0.05) 1px, transparent 1px);
+      background-size: 28px 28px;
+    }
+
+    #page-loading, #page-dashboard, #page-wall, #page-rbt {
+      position: relative; z-index: 1;
+    }
 
     /* ═══════════════════════════════════════
        LOADING SCREEN
     ═══════════════════════════════════════ */
     #page-loading {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      flex-direction: column;
-      gap: 18px;
+      display: flex; align-items: center; justify-content: center;
+      min-height: 100vh; flex-direction: column; gap: 18px;
     }
-
     .spinner {
       width: 44px; height: 44px;
       border: 3px solid var(--c-accent-dim);
@@ -104,76 +104,48 @@
       backdrop-filter: blur(14px);
       border-bottom: 1px solid var(--c-border);
       padding: 14px 32px;
-      display: flex; align-items: center; justify-content: space-between;
-      gap: 16px;
+      display: flex; align-items: center; justify-content: space-between; gap: 16px;
     }
-
     .brand {
       display: flex; align-items: center; gap: 10px;
       text-decoration: none; color: inherit;
     }
-
-    /* logo SVG sized via height attribute inline */
-
     .brand-tag {
       font-size: 11px; font-weight: 500;
-      background: var(--c-accent-dim);
-      color: var(--c-accent);
+      background: var(--c-accent-dim); color: var(--c-accent);
       border: 1px solid var(--c-accent-glow);
-      padding: 3px 9px;
-      border-radius: 100px;
-      letter-spacing: .04em;
+      padding: 3px 9px; border-radius: 100px; letter-spacing: .04em;
     }
 
     /* ═══════════════════════════════════════
-       BUTTONS (shared)
+       BUTTONS
     ═══════════════════════════════════════ */
     .btn {
       display: inline-flex; align-items: center; gap: 6px;
-      padding: 10px 20px;
-      border-radius: 10px;
-      font-family: 'Inter', sans-serif;
-      font-size: 14px; font-weight: 600;
-      cursor: pointer;
-      transition: all .18s;
-      border: none; outline: none;
-      white-space: nowrap;
+      padding: 10px 20px; border-radius: 10px;
+      font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 600;
+      cursor: pointer; transition: all .18s; border: none; outline: none; white-space: nowrap;
     }
-    .btn-primary {
-      background: var(--c-accent);
-      color: #120f0c;
-    }
+    .btn-primary { background: var(--c-accent); color: #120f0c; }
     .btn-primary:hover { background: #00bfa0; transform: translateY(-1px); }
     .btn-primary:active { transform: translateY(0); }
-
     .btn-ghost {
-      background: transparent;
-      border: 1px solid var(--c-border);
-      color: var(--c-muted);
+      background: transparent; border: 1px solid var(--c-border); color: var(--c-muted);
     }
     .btn-ghost:hover { border-color: var(--c-accent); color: var(--c-accent); }
-
     .btn-outline {
-      background: transparent;
-      border: 1px solid var(--c-accent-glow);
-      color: var(--c-accent);
+      background: transparent; border: 1px solid var(--c-accent-glow); color: var(--c-accent);
     }
     .btn-outline:hover { background: var(--c-accent-dim); }
 
     /* ═══════════════════════════════════════
-       INPUTS (shared)
+       INPUTS
     ═══════════════════════════════════════ */
     .field {
-      background: rgba(255,255,255,0.04);
-      border: 1px solid var(--c-border);
-      border-radius: 10px;
-      padding: 11px 16px;
-      color: var(--c-text);
-      font-family: 'Inter', sans-serif;
-      font-size: 14px;
-      outline: none;
-      transition: border-color .2s;
-      width: 100%;
+      background: rgba(255,255,255,0.04); border: 1px solid var(--c-border);
+      border-radius: 10px; padding: 11px 16px; color: var(--c-text);
+      font-family: 'Inter', sans-serif; font-size: 14px; outline: none;
+      transition: border-color .2s; width: 100%;
     }
     .field:focus { border-color: var(--c-accent); }
     .field::placeholder { color: var(--c-muted2); }
@@ -184,180 +156,137 @@
     #page-dashboard { display: none; min-height: 100vh; }
 
     .dash-hero {
-      padding: 64px 40px 48px;
-      text-align: center;
+      padding: 64px 40px 48px; text-align: center;
     }
-
     .dash-eyebrow {
-      display: inline-block;
-      font-size: 12px; font-weight: 600; letter-spacing: .1em;
-      text-transform: uppercase;
-      color: var(--c-accent);
-      margin-bottom: 16px;
+      display: inline-block; font-size: 12px; font-weight: 600; letter-spacing: .1em;
+      text-transform: uppercase; color: var(--c-accent); margin-bottom: 16px;
     }
-
     .dash-hero h1 {
-      font-size: clamp(30px, 5vw, 48px);
-      font-weight: 700;
-      letter-spacing: -.03em;
-      line-height: 1.1;
+      font-size: clamp(30px, 5vw, 48px); font-weight: 700; letter-spacing: -.03em; line-height: 1.1;
       background: linear-gradient(135deg, var(--c-text) 40%, var(--c-accent) 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
       margin-bottom: 14px;
     }
+    .dash-hero p { color: var(--c-muted); font-size: 15px; line-height: 1.7; max-width: 480px; margin: 0 auto 40px; }
 
-    .dash-hero p {
-      color: var(--c-muted); font-size: 15px; line-height: 1.7;
-      max-width: 480px; margin: 0 auto 40px;
+    /* ── Tool Picker ── */
+    .tool-picker {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px;
     }
+    .tool-tile {
+      border: 1px solid var(--c-border); border-radius: 14px; padding: 14px 16px;
+      cursor: pointer; transition: all .2s; background: transparent;
+      text-align: left; color: var(--c-text); font-family: 'Inter', sans-serif;
+      display: flex; flex-direction: column; gap: 3px; position: relative;
+    }
+    .tool-tile:hover { border-color: var(--c-accent-glow); background: var(--c-accent-dim); }
+    .tool-tile.selected {
+      border-color: var(--c-accent); background: var(--c-accent-dim);
+      box-shadow: 0 0 0 1px var(--c-accent);
+    }
+    .tool-tile.selected::after {
+      content: '✓';
+      position: absolute; top: 10px; right: 12px;
+      font-size: 11px; color: var(--c-accent); font-weight: 700;
+    }
+    .tool-tile-icon { font-size: 22px; margin-bottom: 4px; }
+    .tool-tile-name { font-size: 13px; font-weight: 600; }
+    .tool-tile-desc { font-size: 11px; color: var(--c-muted); line-height: 1.4; }
 
     /* Create session card */
     .create-card {
-      background: var(--c-surface);
-      border: 1px solid rgba(0,212,170,0.18);
-      border-radius: 18px;
-      padding: 32px;
-      max-width: 560px;
-      margin: 0 auto;
+      background: var(--c-surface); border: 1px solid rgba(0,212,170,0.18);
+      border-radius: 18px; padding: 32px; max-width: 760px; margin: 0 auto;
       box-shadow: 0 0 40px rgba(0,212,170,0.06);
     }
-
     .create-card h2 {
-      font-size: 16px; font-weight: 600;
-      margin-bottom: 20px;
+      font-size: 16px; font-weight: 600; margin-bottom: 20px;
       display: flex; align-items: center; gap: 8px;
     }
-
-    .input-row {
-      display: flex; gap: 10px;
-    }
+    .input-row { display: flex; gap: 10px; }
 
     /* Generated link panel */
     .link-panel {
-      margin-top: 18px;
-      background: var(--c-accent-dim);
-      border: 1px solid var(--c-accent-glow);
-      border-radius: 12px;
-      padding: 16px 18px;
-      display: none;
+      margin-top: 18px; background: var(--c-accent-dim);
+      border: 1px solid var(--c-accent-glow); border-radius: 12px; padding: 16px 18px; display: none;
     }
-
     .link-panel-label {
-      font-size: 11px; font-weight: 600; letter-spacing: .08em;
-      text-transform: uppercase;
-      color: var(--c-accent);
-      margin-bottom: 10px;
+      font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase;
+      color: var(--c-accent); margin-bottom: 10px;
     }
-
-    .link-row {
-      display: flex; gap: 8px; align-items: center;
-    }
-
+    .link-row { display: flex; gap: 8px; align-items: center; }
     .link-display {
-      flex: 1;
-      background: rgba(0,0,0,0.25);
-      border: 1px solid rgba(255,255,255,0.06);
-      border-radius: 8px;
-      padding: 8px 12px;
-      color: var(--c-text);
-      font-size: 12.5px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      flex: 1; background: rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 8px; padding: 8px 12px; color: var(--c-text);
+      font-size: 12.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
 
     /* Sessions grid */
-    .sessions-wrap {
-      max-width: 840px; margin: 0 auto;
-      padding: 0 40px 80px;
-    }
-
+    .sessions-wrap { max-width: 840px; margin: 0 auto; padding: 0 40px 80px; }
     .sessions-heading {
-      font-size: 13px; font-weight: 600; letter-spacing: .07em;
-      text-transform: uppercase;
-      color: var(--c-muted);
-      margin-bottom: 18px;
+      font-size: 13px; font-weight: 600; letter-spacing: .07em; text-transform: uppercase;
+      color: var(--c-muted); margin-bottom: 18px;
       display: flex; align-items: center; justify-content: space-between;
     }
-
     .session-count {
-      background: var(--c-surface);
-      border: 1px solid var(--c-border);
-      border-radius: 100px;
-      padding: 2px 10px;
-      font-size: 12px;
-      color: var(--c-muted);
+      background: var(--c-surface); border: 1px solid var(--c-border);
+      border-radius: 100px; padding: 2px 10px; font-size: 12px; color: var(--c-muted);
     }
-
     .sessions-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-      gap: 14px;
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px;
     }
-
     .session-card {
-      background: var(--c-surface);
-      border: 1px solid var(--c-border);
-      border-radius: 14px;
-      padding: 20px;
-      cursor: pointer;
-      transition: all .2s;
-      text-decoration: none;
-      color: inherit;
-      display: flex; flex-direction: column; gap: 6px;
+      background: var(--c-surface); border: 1px solid var(--c-border); border-radius: 14px;
+      padding: 20px; cursor: pointer; transition: all .2s; text-decoration: none;
+      color: inherit; display: flex; flex-direction: column; gap: 6px;
     }
     .session-card:hover {
-      border-color: var(--c-accent);
-      transform: translateY(-3px);
+      border-color: var(--c-accent); transform: translateY(-3px);
       box-shadow: 0 8px 28px rgba(0,212,170,0.1);
     }
-
-    .sc-name {
-      font-weight: 600; font-size: 15px;
-      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-    }
+    .sc-name { font-weight: 600; font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .sc-date { font-size: 12px; color: var(--c-muted); }
+    .sc-type {
+      font-size: 10px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase;
+      padding: 2px 8px; border-radius: 100px; background: var(--c-surface2); color: var(--c-muted);
+      display: inline-flex; align-items: center; gap: 4px; width: fit-content;
+    }
     .sc-count {
-      margin-top: 8px;
-      font-size: 12px; color: var(--c-accent);
+      margin-top: 6px; font-size: 12px; color: var(--c-accent);
       display: flex; align-items: center; gap: 5px;
     }
-
-    .session-card-wrap {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
+    .session-card-wrap { display: flex; flex-direction: column; gap: 6px; position: relative; }
+    .session-cb {
+      position: absolute; top: 12px; left: 12px; z-index: 10;
+      width: 18px; height: 18px; accent-color: var(--c-accent); cursor: pointer;
     }
-
+    .session-card-wrap:has(.session-cb:checked) .session-card {
+      border-color: var(--c-accent); box-shadow: 0 0 0 2px var(--c-accent-dim);
+    }
+    .multi-delete-bar {
+      display: none; align-items: center; justify-content: space-between;
+      background: rgba(224,90,90,0.1); border: 1px solid rgba(224,90,90,0.25);
+      border-radius: 10px; padding: 10px 16px; margin-bottom: 12px;
+      font-size: 13px; color: #e05a5a;
+    }
+    .multi-delete-bar.visible { display: flex; }
+    .multi-delete-bar-btn {
+      background: #e05a5a; color: #fff; border: none; border-radius: 8px;
+      padding: 6px 16px; font-family: 'Inter', sans-serif; font-size: 12px;
+      font-weight: 600; cursor: pointer; transition: background .18s;
+    }
+    .multi-delete-bar-btn:hover { background: #c94040; }
     .delete-btn {
-      display: flex; align-items: center; gap: 5px;
-      background: transparent;
-      border: 1px solid rgba(255,255,255,0.07);
-      border-radius: 8px;
-      padding: 6px 12px;
-      color: var(--c-muted);
-      font-family: 'Inter', sans-serif;
-      font-size: 11px;
-      cursor: pointer;
-      transition: all .18s;
-      width: 100%;
-      justify-content: center;
+      display: flex; align-items: center; gap: 5px; background: transparent;
+      border: 1px solid rgba(255,255,255,0.07); border-radius: 8px; padding: 6px 12px;
+      color: var(--c-muted); font-family: 'Inter', sans-serif; font-size: 11px;
+      cursor: pointer; transition: all .18s; width: 100%; justify-content: center;
     }
-    .delete-btn:hover {
-      border-color: #e05a5a;
-      color: #e05a5a;
-      background: rgba(224,90,90,0.08);
-    }
-
+    .delete-btn:hover { border-color: #e05a5a; color: #e05a5a; background: rgba(224,90,90,0.08); }
     .empty-msg {
-      grid-column: 1 / -1;
-      text-align: center;
-      padding: 60px 20px;
-      color: var(--c-muted);
-      font-size: 14px;
-      line-height: 1.7;
+      grid-column: 1 / -1; text-align: center; padding: 60px 20px;
+      color: var(--c-muted); font-size: 14px; line-height: 1.7;
     }
     .empty-msg strong { display: block; font-size: 18px; margin-bottom: 6px; color: var(--c-text); }
 
@@ -365,243 +294,610 @@
        WONDER WALL PAGE
     ═══════════════════════════════════════ */
     .wall-subheader {
-      padding: 10px 32px;
-      background: rgba(8,14,26,0.7);
-      backdrop-filter: blur(8px);
+      padding: 10px 32px; background: rgba(8,14,26,0.7); backdrop-filter: blur(8px);
       border-bottom: 1px solid var(--c-border);
-      display: flex; align-items: center; justify-content: space-between;
-      font-size: 13px;
+      display: flex; align-items: center; justify-content: space-between; font-size: 13px;
     }
-
     .wall-session-pill {
       display: inline-flex; align-items: center; gap: 6px;
-      background: var(--c-accent-dim);
-      color: var(--c-accent);
-      border: 1px solid var(--c-accent-glow);
-      border-radius: 100px;
-      padding: 4px 12px;
-      font-size: 12px; font-weight: 600;
+      background: var(--c-accent-dim); color: var(--c-accent);
+      border: 1px solid var(--c-accent-glow); border-radius: 100px;
+      padding: 4px 12px; font-size: 12px; font-weight: 600;
     }
-
     .wall-live-dot {
-      width: 7px; height: 7px;
-      background: var(--c-accent);
-      border-radius: 50%;
+      width: 7px; height: 7px; background: var(--c-accent); border-radius: 50%;
       animation: pulse 2s ease-in-out infinite;
     }
     @keyframes pulse {
       0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: .5; transform: scale(.8); }
+      50%       { opacity: .5; transform: scale(.8); }
     }
-
-    /* ── Wall page layout ─────────────────────────────────────────── */
-    #page-wall {
-      display: none;
-      flex-direction: column;
-      min-height: 100vh;
-    }
-
-    /* ── Top banner: title left, input right ──────────────────────── */
+    #page-wall { display: none; flex-direction: column; min-height: 100vh; }
     .wall-top {
-      display: flex;
-      align-items: center;
-      gap: 32px;
-      padding: 20px 32px;
-      border-bottom: 1px solid var(--c-border);
-      flex-shrink: 0;
-      background: rgba(30,27,25,0.6);
-      backdrop-filter: blur(8px);
+      display: flex; align-items: center; gap: 32px; padding: 20px 32px;
+      border-bottom: 1px solid var(--c-border); flex-shrink: 0;
+      background: rgba(30,27,25,0.6); backdrop-filter: blur(8px);
     }
-
-    .wall-hero {
-      flex: 0 0 auto;
-    }
-
+    .wall-hero { flex: 0 0 auto; }
     .wall-hero h1 {
-      font-family: 'Inter', sans-serif;
-      font-size: clamp(22px, 2.6vw, 34px);
-      font-weight: 700;
-      line-height: 1.2;
-      color: var(--c-text);
-      margin-bottom: 6px;
-      letter-spacing: -.02em;
-      white-space: nowrap;
+      font-family: 'Inter', sans-serif; font-size: clamp(22px, 2.6vw, 34px);
+      font-weight: 700; line-height: 1.2; color: var(--c-text); margin-bottom: 6px;
+      letter-spacing: -.02em; white-space: nowrap;
     }
-    .wall-hero h1 em {
-      color: var(--c-accent);
-      font-style: normal;
-    }
-
-    .wall-hero p {
-      font-size: 13px; color: var(--c-muted);
-      line-height: 1.55;
-    }
-
-    /* ── Add-note panel (right of top banner) ─────────────────────── */
-    .add-note-wrap {
-      flex: 1;
-      min-width: 300px;
-    }
-
+    .wall-hero h1 em { color: var(--c-accent); font-style: normal; }
+    .wall-hero p { font-size: 13px; color: var(--c-muted); line-height: 1.55; }
+    .add-note-wrap { flex: 1; min-width: 300px; }
     .add-note-panel {
-      background: var(--c-surface);
-      border: 1px solid rgba(140,227,208,0.22);
-      border-radius: 16px;
-      padding: 14px 16px;
-      box-shadow: 0 4px 20px rgba(0,0,0,.3);
+      background: var(--c-surface); border: 1px solid rgba(140,227,208,0.22);
+      border-radius: 16px; padding: 14px 16px; box-shadow: 0 4px 20px rgba(0,0,0,.3);
     }
-
     .note-input {
-      width: 100%;
-      background: rgba(255,255,255,0.04);
-      border: 1px solid var(--c-border);
-      border-radius: 10px;
-      padding: 10px 14px;
-      color: var(--c-text);
-      font-family: 'Patrick Hand', cursive;
-      font-size: 18px;
-      resize: none;
-      height: 72px;
-      outline: none;
-      transition: border-color .2s;
-      margin-bottom: 8px;
-      line-height: 1.4;
+      width: 100%; background: rgba(255,255,255,0.04); border: 1px solid var(--c-border);
+      border-radius: 10px; padding: 10px 14px; color: var(--c-text);
+      font-family: 'Patrick Hand', cursive; font-size: 18px; resize: none; height: 72px;
+      outline: none; transition: border-color .2s; margin-bottom: 8px; line-height: 1.4;
     }
     .note-input:focus { border-color: var(--c-accent); }
     .note-input::placeholder { color: var(--c-muted2); }
-
-    .note-footer {
-      display: flex; align-items: center;
-      gap: 8px;
-    }
-
+    .note-footer { display: flex; align-items: center; gap: 8px; }
     .author-input {
-      background: rgba(255,255,255,0.04);
-      border: 1px solid var(--c-border);
-      border-radius: 8px;
-      padding: 8px 10px;
-      color: var(--c-text);
-      font-family: 'Inter', sans-serif;
-      font-size: 12px;
-      outline: none;
-      transition: border-color .2s;
-      width: 175px;
-      flex-shrink: 0;
+      background: rgba(255,255,255,0.04); border: 1px solid var(--c-border);
+      border-radius: 8px; padding: 8px 10px; color: var(--c-text);
+      font-family: 'Inter', sans-serif; font-size: 12px; outline: none;
+      transition: border-color .2s; width: 175px; flex-shrink: 0;
     }
     .author-input:focus { border-color: var(--c-accent); }
     .author-input::placeholder { color: var(--c-muted2); }
+    .char-hint { font-size: 10px; color: var(--c-muted2); flex-shrink: 0; }
 
-    .char-hint {
-      font-size: 10px; color: var(--c-muted2);
-      flex-shrink: 0;
-    }
-
-    /* ── The Wall itself ──────────────────────────────────────────── */
+    /* ── The Wall ── */
     .notes-wall {
-      flex: 1;
-      padding: 28px 32px 100px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 18px;
-      align-content: flex-start;
-      justify-content: center;
+      flex: 1; padding: 28px 32px 100px;
+      display: flex; flex-wrap: wrap; gap: 18px;
+      align-content: flex-start; justify-content: center;
     }
-
     .sticky {
-      width: 188px;
-      min-height: 164px;
-      border-radius: 3px;
-      padding: 18px 16px 14px;
+      width: 188px; min-height: 164px; border-radius: 3px; padding: 18px 16px 14px;
       position: relative;
-      box-shadow:
-        2px 4px 14px rgba(0,0,0,.5),
-        0 1px 0 rgba(0,0,0,.35),
-        inset 0 -1px 0 rgba(0,0,0,.08);
+      box-shadow: 2px 4px 14px rgba(0,0,0,.5), 0 1px 0 rgba(0,0,0,.35), inset 0 -1px 0 rgba(0,0,0,.08);
       animation: noteIn .35s cubic-bezier(.175,.885,.32,1.275) both;
-      /* rotation set inline via CSS var */
-      transform: rotate(var(--r, 0deg));
-      cursor: default;
-      overflow: hidden;
+      transform: rotate(var(--r, 0deg)); cursor: default; overflow: hidden;
     }
-
-    /* Tape strip effect at top */
     .sticky::before {
-      content: '';
-      position: absolute;
-      top: -4px; left: 50%; transform: translateX(-50%);
-      width: 38px; height: 14px;
-      background: rgba(255,255,255,0.35);
-      border-radius: 2px;
+      content: ''; position: absolute; top: -4px; left: 50%; transform: translateX(-50%);
+      width: 38px; height: 14px; background: rgba(255,255,255,0.35); border-radius: 2px;
     }
-
-    /* Folded corner */
     .sticky::after {
-      content: '';
-      position: absolute;
-      bottom: 0; right: 0;
-      width: 22px; height: 22px;
-      background: linear-gradient(225deg, rgba(0,0,0,.14) 50%, transparent 50%);
+      content: ''; position: absolute; bottom: 0; right: 0;
+      width: 22px; height: 22px; background: linear-gradient(225deg, rgba(0,0,0,.14) 50%, transparent 50%);
     }
-
     @keyframes noteIn {
       from { opacity: 0; transform: scale(.65) rotate(var(--r, 0deg)); }
       to   { opacity: 1; transform: scale(1)  rotate(var(--r, 0deg)); }
     }
-
-    .sticky-text {
-      font-family: 'Patrick Hand', cursive;
-      font-size: 17px;
-      line-height: 1.5;
-      color: #1a1a2e;
-      word-break: break-word;
-      margin-top: 6px;
-    }
-
-    .sticky-author {
-      margin-top: 10px;
-      font-size: 11px;
-      color: rgba(0,0,0,.35);
-      font-family: 'Inter', sans-serif;
-      font-style: italic;
-    }
-
-    /* ── Fixed counter ────────────────────────────────────────────── */
+    .sticky-text { font-family: 'Patrick Hand', cursive; font-size: 17px; line-height: 1.5; color: #1a1a2e; word-break: break-word; margin-top: 6px; }
+    .sticky-author { margin-top: 10px; font-size: 11px; color: rgba(0,0,0,.35); font-family: 'Inter', sans-serif; font-style: italic; }
     .wonder-pill {
       position: fixed; bottom: 22px; right: 22px; z-index: 300;
-      background: var(--c-surface);
-      border: 1px solid var(--c-accent-glow);
-      border-radius: 14px;
-      padding: 10px 18px;
+      background: var(--c-surface); border: 1px solid var(--c-accent-glow);
+      border-radius: 14px; padding: 10px 18px;
       display: flex; align-items: center; gap: 10px;
-      font-size: 13px; color: var(--c-muted);
-      box-shadow: 0 4px 20px rgba(0,0,0,.4);
+      font-size: 13px; color: var(--c-muted); box-shadow: 0 4px 20px rgba(0,0,0,.4);
     }
+    .wonder-pill strong { color: var(--c-accent); font-size: 20px; font-weight: 700; min-width: 28px; text-align: right; }
+    .export-btn { position: fixed; bottom: 22px; left: 22px; z-index: 300; }
 
-    .wonder-pill strong {
-      color: var(--c-accent); font-size: 20px; font-weight: 700;
-      min-width: 28px; text-align: right;
-    }
-
-    /* ── Export button (shown only for facilitator) ───────────────── */
-    .export-btn {
-      position: fixed; bottom: 22px; left: 22px; z-index: 300;
-    }
-
-    /* ── Toast ───────────────────────────────────────────────────── */
+    /* ── Toast ── */
     #toast {
       position: fixed; bottom: 22px; left: 50%;
       transform: translateX(-50%) translateY(80px);
-      background: var(--c-accent);
-      color: #120f0c;
-      padding: 11px 22px;
-      border-radius: 100px;
+      background: var(--c-accent); color: #120f0c;
+      padding: 11px 22px; border-radius: 100px;
       font-size: 13px; font-weight: 600;
       transition: transform .28s cubic-bezier(.175,.885,.32,1.275);
-      z-index: 9999;
-      white-space: nowrap;
-      box-shadow: 0 4px 16px rgba(140,227,208,.3);
+      z-index: 9999; white-space: nowrap; box-shadow: 0 4px 16px rgba(140,227,208,.3);
     }
     #toast.show { transform: translateX(-50%) translateY(0); }
+
+    /* ═══════════════════════════════════════
+       ROSE, BUD, THORN — GARDEN THEME
+    ═══════════════════════════════════════ */
+    #page-rbt { display: none; flex-direction: column; min-height: 100vh; }
+
+    #page-rbt .site-header {
+      background: rgba(11,26,13,0.96);
+      border-bottom: 1px solid var(--g-border);
+    }
+
+    .rbt-session-pill {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(63,171,104,0.12); color: var(--g-bud-light);
+      border: 1px solid rgba(63,171,104,0.25); border-radius: 100px;
+      padding: 4px 12px; font-size: 12px; font-weight: 600;
+    }
+    .rbt-live-dot {
+      width: 7px; height: 7px; background: var(--g-bud); border-radius: 50%;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    /* ── RBT Top input banner ── */
+    .rbt-top {
+      display: flex; align-items: center; gap: 28px; padding: 20px 32px;
+      border-bottom: 1px solid var(--g-border); flex-shrink: 0;
+      background: rgba(18,32,22,0.7); backdrop-filter: blur(8px);
+    }
+    .rbt-hero { flex: 0 0 auto; }
+    .rbt-hero h1 {
+      font-family: 'Lora', serif; font-size: clamp(20px, 2.4vw, 30px);
+      font-weight: 600; line-height: 1.2; letter-spacing: -.01em;
+      color: var(--c-text); margin-bottom: 6px; white-space: nowrap;
+    }
+    .rbt-hero h1 em { color: var(--g-bud-light); font-style: italic; }
+    .rbt-hero p { font-size: 12px; color: rgba(255,255,255,0.4); }
+
+    .rbt-input-wrap { flex: 1; min-width: 300px; }
+    .rbt-input-panel {
+      background: rgba(18,32,22,0.8); border: 1px solid rgba(63,171,104,0.2);
+      border-radius: 16px; padding: 14px 16px; box-shadow: 0 4px 20px rgba(0,0,0,.4);
+    }
+
+    /* Category selector */
+    .rbt-cat-row { display: flex; gap: 6px; margin-bottom: 10px; }
+    .rbt-cat-btn {
+      flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px;
+      padding: 8px 10px; border-radius: 10px; border: 1px solid var(--g-border);
+      background: transparent; color: rgba(255,255,255,0.5);
+      font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 600;
+      cursor: pointer; transition: all .2s;
+    }
+    .rbt-cat-btn:hover { background: rgba(255,255,255,0.04); color: rgba(255,255,255,0.7); }
+    .rbt-cat-btn.rose.active  { border-color: var(--g-rose); color: var(--g-rose-light); background: var(--g-rose-dim); }
+    .rbt-cat-btn.bud.active   { border-color: var(--g-bud); color: var(--g-bud-light); background: var(--g-bud-dim); }
+    .rbt-cat-btn.thorn.active { border-color: var(--g-thorn); color: var(--g-thorn-light); background: var(--g-thorn-dim); }
+
+    .rbt-text-input {
+      width: 100%; background: rgba(255,255,255,0.04); border: 1px solid var(--g-border);
+      border-radius: 10px; padding: 10px 14px; color: var(--c-text);
+      font-family: 'Lora', serif; font-size: 15px; resize: none; height: 60px;
+      outline: none; transition: border-color .2s; line-height: 1.4; margin-bottom: 8px;
+    }
+    .rbt-text-input:focus { border-color: rgba(63,171,104,0.5); }
+    .rbt-text-input::placeholder { color: rgba(255,255,255,0.2); font-style: italic; }
+    .rbt-bottom-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+
+    .rbt-author-input {
+      background: rgba(255,255,255,0.04); border: 1px solid var(--g-border);
+      border-radius: 8px; padding: 8px 10px; color: var(--c-text);
+      font-family: 'Inter', sans-serif; font-size: 12px; outline: none;
+      transition: border-color .2s; width: 160px; flex-shrink: 0;
+    }
+    .rbt-author-input:focus { border-color: rgba(63,171,104,0.4); }
+    .rbt-author-input::placeholder { color: rgba(255,255,255,0.2); }
+
+    .rbt-submit-btn {
+      padding: 9px 22px; border-radius: 10px;
+      background: rgba(63,171,104,0.85); color: #0b1a0d;
+      font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 700;
+      cursor: pointer; border: none; transition: all .18s; white-space: nowrap;
+    }
+    .rbt-submit-btn:hover { background: var(--g-bud); transform: translateY(-1px); }
+
+    /* ── Three garden columns ── */
+    .rbt-columns {
+      flex: 1; display: grid; grid-template-columns: 1fr 1fr 1fr;
+      min-height: calc(100vh - 250px);
+    }
+    .rbt-column {
+      padding: 28px 22px 80px;
+      border-right: 1px solid var(--g-border);
+      display: flex; flex-direction: column; gap: 12px;
+    }
+    .rbt-column:last-child { border-right: none; }
+    .rbt-column.rose  { background: linear-gradient(180deg, rgba(196,64,94,0.04) 0%, transparent 200px); }
+    .rbt-column.bud   { background: linear-gradient(180deg, rgba(63,171,104,0.04) 0%, transparent 200px); }
+    .rbt-column.thorn { background: linear-gradient(180deg, rgba(134,116,42,0.04) 0%, transparent 200px); }
+
+    .rbt-col-header {
+      display: flex; flex-direction: column; align-items: center; gap: 10px;
+      padding-bottom: 20px; border-bottom: 1px solid var(--g-border); margin-bottom: 4px;
+    }
+    .rbt-col-title {
+      font-family: 'Lora', serif; font-size: 18px; font-weight: 600; letter-spacing: -.01em;
+    }
+    .rbt-column.rose  .rbt-col-title { color: var(--g-rose-light); }
+    .rbt-column.bud   .rbt-col-title { color: var(--g-bud-light); }
+    .rbt-column.thorn .rbt-col-title { color: var(--g-thorn-light); }
+    .rbt-col-desc { font-size: 12px; text-align: center; color: rgba(255,255,255,0.32); line-height: 1.6; font-style: italic; }
+    .rbt-col-count { font-size: 11px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; }
+    .rbt-column.rose  .rbt-col-count { color: var(--g-rose); }
+    .rbt-column.bud   .rbt-col-count { color: var(--g-bud); }
+    .rbt-column.thorn .rbt-col-count { color: var(--g-thorn-light); }
+
+    /* Response cards */
+    .rbt-card {
+      border-radius: 12px; padding: 14px 16px;
+      background: rgba(255,255,255,0.04);
+      font-family: 'Lora', serif; font-size: 14px; line-height: 1.6;
+      animation: cardIn .32s ease both;
+    }
+    .rbt-column.rose  .rbt-card { border-left: 3px solid var(--g-rose); }
+    .rbt-column.bud   .rbt-card { border-left: 3px solid var(--g-bud); }
+    .rbt-column.thorn .rbt-card { border-left: 3px solid var(--g-thorn); }
+    .rbt-card-author { font-size: 11px; color: rgba(255,255,255,0.28); margin-top: 8px; font-style: italic; font-family: 'Inter', sans-serif; }
+
+    @keyframes cardIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .rbt-count-pill {
+      position: fixed; bottom: 22px; right: 22px; z-index: 300;
+      background: var(--g-surface); border: 1px solid var(--g-border);
+      border-radius: 14px; padding: 10px 18px;
+      display: flex; align-items: center; gap: 10px;
+      font-size: 13px; color: rgba(255,255,255,0.4); box-shadow: 0 4px 20px rgba(0,0,0,.5);
+    }
+    .rbt-count-pill strong { color: var(--g-bud-light); font-size: 20px; font-weight: 700; min-width: 28px; text-align: right; }
+
+    /* ═══════════════════════════════════════
+       FACILITATOR HOME
+    ═══════════════════════════════════════ */
+    .facilitators-wrap { max-width: 960px; margin: 0 auto; padding: 0 40px 80px; }
+    .facilitators-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px;
+    }
+    .fac-card {
+      background: var(--c-surface); border: 1px solid var(--c-border); border-radius: 18px;
+      padding: 24px; cursor: pointer; transition: all .2s; color: inherit;
+      display: flex; flex-direction: column; gap: 8px; position: relative;
+    }
+    .fac-card:hover { border-color: var(--c-accent); transform: translateY(-3px); box-shadow: 0 10px 32px rgba(0,212,170,0.1); }
+    .fac-card.yours { border-color: var(--c-accent); box-shadow: 0 0 0 1px var(--c-accent); }
+    .fac-card-name { font-size: 18px; font-weight: 700; letter-spacing: -.02em; }
+    .fac-card-meta { font-size: 12px; color: var(--c-muted); }
+    .fac-card-tools { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 4px; }
+    .fac-tool-badge { font-size: 11px; background: var(--c-surface2); border-radius: 6px; padding: 2px 7px; color: var(--c-muted); }
+    .your-space-badge {
+      position: absolute; top: 12px; right: 14px;
+      font-size: 10px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
+      color: var(--c-accent); background: var(--c-accent-dim); border: 1px solid var(--c-accent-glow);
+      border-radius: 100px; padding: 2px 8px;
+    }
+    .fac-card-new {
+      border: 1px dashed var(--c-muted2); background: transparent;
+      align-items: center; justify-content: center; text-align: center; min-height: 130px;
+    }
+    .fac-card-new:hover { border-color: var(--c-accent); border-style: solid; }
+    .fac-new-icon { font-size: 28px; color: var(--c-muted); margin-bottom: 6px; }
+    .fac-new-label { font-size: 14px; font-weight: 600; color: var(--c-muted); }
+    .fac-card-new:hover .fac-new-icon,
+    .fac-card-new:hover .fac-new-label { color: var(--c-accent); }
+    .fac-name-form { border: 1px solid var(--c-accent); background: var(--c-surface); min-height: 130px; justify-content: center; gap: 10px; }
+    .fac-name-form label { font-size: 13px; font-weight: 600; color: var(--c-accent); }
+
+    /* Space topbar */
+    .space-topbar {
+      padding: 12px 32px; display: flex; align-items: center; gap: 14px;
+      border-bottom: 1px solid var(--c-border); background: rgba(18,15,12,0.5);
+    }
+    .dash-back-btn {
+      background: transparent; border: 1px solid var(--c-border); border-radius: 8px;
+      padding: 6px 12px; color: var(--c-muted); font-family: 'Inter', sans-serif;
+      font-size: 12px; cursor: pointer; transition: all .18s; white-space: nowrap;
+    }
+    .dash-back-btn:hover { border-color: var(--c-accent); color: var(--c-accent); }
+    .space-title { font-size: 15px; font-weight: 600; flex: 1; }
+    .space-readonly-badge {
+      font-size: 11px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase;
+      color: var(--c-muted); background: var(--c-surface2); border: 1px solid var(--c-border);
+      border-radius: 100px; padding: 3px 10px;
+    }
+
+    /* ═══════════════════════════════════════
+       WORD CLOUD
+    ═══════════════════════════════════════ */
+    #page-wc { display: none; flex-direction: column; min-height: 100vh; }
+
+    .wc-top {
+      display: flex; align-items: center; gap: 28px; padding: 20px 32px;
+      border-bottom: 1px solid var(--c-border); flex-shrink: 0;
+      background: rgba(18,15,12,0.7); backdrop-filter: blur(8px);
+    }
+    .wc-hero { flex: 0 0 auto; }
+    .wc-hero h1 {
+      font-size: clamp(18px, 2.2vw, 28px); font-weight: 700;
+      letter-spacing: -.02em; line-height: 1.2; margin-bottom: 4px; white-space: nowrap;
+    }
+    .wc-hero p { font-size: 12px; color: var(--c-muted); }
+
+    .wc-input-wrap { flex: 1; min-width: 260px; }
+    .wc-input-row {
+      display: flex; gap: 8px; align-items: center;
+      background: var(--c-surface); border: 1px solid var(--c-border);
+      border-radius: 14px; padding: 10px 14px;
+    }
+    .wc-text-input {
+      flex: 1; background: transparent; border: none; outline: none;
+      color: var(--c-text); font-family: 'Inter', sans-serif; font-size: 15px; font-weight: 500;
+    }
+    .wc-text-input::placeholder { color: var(--c-muted2); }
+    .wc-submit-btn {
+      padding: 8px 18px; border-radius: 9px;
+      background: var(--c-accent); color: #120f0c;
+      font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 700;
+      cursor: pointer; border: none; transition: all .18s; white-space: nowrap; flex-shrink: 0;
+    }
+    .wc-submit-btn:hover { background: #00bfa0; transform: translateY(-1px); }
+
+    /* The cloud itself */
+    .wc-cloud {
+      flex: 1; display: flex; flex-wrap: wrap;
+      align-items: center; justify-content: center; align-content: center;
+      gap: 10px 22px; padding: 40px 48px 100px;
+    }
+    .wc-word {
+      font-family: 'Inter', sans-serif; font-weight: 700; line-height: 1.2;
+      cursor: default; transition: font-size .4s ease, opacity .2s;
+      animation: wcWordIn .4s cubic-bezier(.175,.885,.32,1.275) both;
+    }
+    @keyframes wcWordIn {
+      from { opacity: 0; transform: scale(0.2); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+
+    .wc-count-pill {
+      position: fixed; bottom: 22px; right: 22px; z-index: 300;
+      background: var(--c-surface); border: 1px solid var(--c-accent-glow);
+      border-radius: 14px; padding: 10px 18px;
+      display: flex; align-items: center; gap: 10px;
+      font-size: 13px; color: var(--c-muted); box-shadow: 0 4px 20px rgba(0,0,0,.4);
+    }
+    .wc-count-pill strong { color: var(--c-accent); font-size: 20px; font-weight: 700; min-width: 28px; text-align: right; }
+
+    /* ═══════════════════════════════════════
+       PROMPT SHARING
+    ═══════════════════════════════════════ */
+    #page-ps { display: none; flex-direction: column; min-height: 100vh; background: #090c14; }
+    #page-ps::before {
+      content: ''; position: fixed; inset: 0;
+      background-image: radial-gradient(circle, rgba(122,154,204,0.04) 1px, transparent 1px);
+      background-size: 32px 32px; pointer-events: none; z-index: 0;
+    }
+    #page-ps .site-header { background: rgba(9,12,20,0.96); border-bottom: 1px solid rgba(122,154,204,0.15); }
+    .ps-session-pill {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(122,154,204,0.1); color: var(--c-blue);
+      border: 1px solid rgba(122,154,204,0.25); border-radius: 100px;
+      padding: 4px 12px; font-size: 12px; font-weight: 600;
+    }
+    .ps-live-dot { width: 7px; height: 7px; background: var(--c-blue); border-radius: 50%; animation: pulse 2s ease-in-out infinite; }
+    .ps-top {
+      position: relative; z-index: 1; padding: 28px 40px 24px;
+      border-bottom: 1px solid rgba(122,154,204,0.1);
+      background: rgba(12,16,28,0.8); backdrop-filter: blur(8px);
+    }
+    .ps-top h1 {
+      font-size: clamp(18px, 2vw, 26px); font-weight: 700; letter-spacing: -.02em;
+      color: var(--c-text); margin-bottom: 4px;
+    }
+    .ps-top p { font-size: 12px; color: rgba(255,255,255,0.35); margin-bottom: 18px; }
+    /* The prompt-bar input — styled like an AI product prompt */
+    .ps-prompt-bar {
+      display: flex; align-items: flex-end; gap: 0;
+      background: rgba(255,255,255,0.05); border: 1px solid rgba(122,154,204,0.25);
+      border-radius: 14px; padding: 12px 12px 12px 18px;
+      max-width: 820px; transition: border-color .2s;
+    }
+    .ps-prompt-bar:focus-within { border-color: rgba(122,154,204,0.55); }
+    .ps-prompt-input {
+      flex: 1; background: transparent; border: none; outline: none;
+      color: var(--c-text); font-family: 'Inter', sans-serif; font-size: 14px;
+      resize: none; min-height: 52px; max-height: 160px; line-height: 1.6;
+    }
+    .ps-prompt-input::placeholder { color: rgba(255,255,255,0.2); }
+    .ps-send-btn {
+      width: 38px; height: 38px; border-radius: 10px; border: none; cursor: pointer;
+      background: var(--c-blue); display: flex; align-items: center; justify-content: center;
+      transition: all .18s; flex-shrink: 0; margin-left: 8px;
+    }
+    .ps-send-btn:hover { background: #9ab4d8; transform: translateY(-1px); }
+    .ps-name-row { display: flex; align-items: center; gap: 10px; margin-top: 10px; max-width: 820px; }
+    .ps-name-input {
+      background: rgba(255,255,255,0.04); border: 1px solid rgba(122,154,204,0.15);
+      border-radius: 8px; padding: 7px 10px; color: var(--c-text);
+      font-family: 'Inter', sans-serif; font-size: 12px; outline: none; width: 170px; flex-shrink: 0;
+    }
+    .ps-name-input::placeholder { color: rgba(255,255,255,0.2); }
+    .ps-name-input:focus { border-color: rgba(122,154,204,0.4); }
+    /* Prompt cards grid */
+    .ps-grid {
+      position: relative; z-index: 1; flex: 1;
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 14px; padding: 28px 40px 100px; align-content: start;
+    }
+    .ps-card {
+      background: rgba(255,255,255,0.04); border: 1px solid rgba(122,154,204,0.12);
+      border-radius: 14px; padding: 18px 20px; position: relative;
+      animation: cardIn .3s ease both;
+    }
+    .ps-card-text { font-size: 14px; line-height: 1.65; color: var(--c-text); }
+    .ps-providers-row {
+      display: flex; align-items: center; gap: 8px;
+      border-top: 1px solid rgba(122,154,204,0.12); padding-top: 10px; margin-top: 4px;
+    }
+    .ps-providers-label { font-size: 12px; color: rgba(122,154,204,0.7); white-space: nowrap; flex-shrink: 0; }
+    .ps-providers-input {
+      flex: 1; background: transparent; border: none; outline: none;
+      color: rgba(122,154,204,0.9); font-family: 'Inter', sans-serif; font-size: 12px;
+    }
+    .ps-providers-input::placeholder { color: rgba(122,154,204,0.35); }
+    .ps-card-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 12px; }
+    .ps-card-author { font-size: 11px; color: rgba(255,255,255,0.3); font-style: italic; }
+    .ps-card-providers {
+      display: flex; align-items: center; gap: 6px;
+      border-top: 1px solid rgba(122,154,204,0.12); margin-top: 12px; padding-top: 10px;
+      font-size: 12px; color: rgba(122,154,204,0.7);
+    }
+    .ps-card-providers strong { color: rgba(122,154,204,0.9); font-weight: 500; }
+    .ps-copy-btn {
+      background: transparent; border: 1px solid rgba(122,154,204,0.2); border-radius: 7px;
+      padding: 4px 10px; color: rgba(122,154,204,0.6); font-family: 'Inter', sans-serif;
+      font-size: 11px; cursor: pointer; transition: all .18s; display: flex; align-items: center; gap: 4px;
+    }
+    .ps-copy-btn:hover { border-color: var(--c-blue); color: var(--c-blue); }
+    .ps-count-pill {
+      position: fixed; bottom: 22px; right: 22px; z-index: 300;
+      background: rgba(12,16,28,0.9); border: 1px solid rgba(122,154,204,0.2);
+      border-radius: 14px; padding: 10px 18px; display: flex; align-items: center; gap: 10px;
+      font-size: 13px; color: rgba(255,255,255,0.4); box-shadow: 0 4px 20px rgba(0,0,0,.5);
+    }
+    .ps-count-pill strong { color: var(--c-blue); font-size: 20px; font-weight: 700; min-width: 28px; text-align: right; }
+
+    /* ═══════════════════════════════════════
+       CUSTOMISABLE PROVOCATION
+    ═══════════════════════════════════════ */
+    #page-prov { display: none; flex-direction: column; min-height: 100vh; }
+    .prov-top {
+      padding: 32px 40px 24px; border-bottom: 1px solid var(--c-border);
+      background: rgba(18,15,12,0.7); backdrop-filter: blur(8px);
+    }
+    .prov-question {
+      font-size: clamp(22px, 3vw, 40px); font-weight: 700; letter-spacing: -.03em;
+      line-height: 1.2; color: var(--c-text); margin-bottom: 6px; max-width: 800px;
+    }
+    .prov-question em { color: var(--c-accent); font-style: normal; }
+    .prov-subline { font-size: 13px; color: var(--c-muted); margin-bottom: 20px; }
+    .prov-input-row {
+      display: flex; gap: 10px; max-width: 720px;
+    }
+    .prov-text-input {
+      flex: 1; background: rgba(255,255,255,0.04); border: 1px solid var(--c-border);
+      border-radius: 10px; padding: 11px 16px; color: var(--c-text);
+      font-family: 'Inter', sans-serif; font-size: 14px; outline: none; transition: border-color .2s;
+    }
+    .prov-text-input:focus { border-color: var(--c-accent); }
+    .prov-text-input::placeholder { color: var(--c-muted2); }
+    .prov-name-input {
+      background: rgba(255,255,255,0.04); border: 1px solid var(--c-border);
+      border-radius: 10px; padding: 11px 14px; color: var(--c-text);
+      font-family: 'Inter', sans-serif; font-size: 13px; outline: none; width: 160px; flex-shrink: 0;
+    }
+    .prov-name-input:focus { border-color: var(--c-accent); }
+    .prov-name-input::placeholder { color: var(--c-muted2); }
+    /* Response cards */
+    .prov-cards {
+      flex: 1; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 14px; padding: 32px 40px 100px; align-content: start;
+    }
+    .prov-card {
+      background: var(--c-surface); border: 1px solid var(--c-border); border-radius: 14px;
+      padding: 20px 22px; animation: cardIn .3s ease both;
+      border-left: 3px solid var(--c-accent);
+    }
+    .prov-card-text { font-size: 15px; line-height: 1.65; color: var(--c-text); }
+    .prov-card-author { font-size: 11px; color: var(--c-muted); margin-top: 10px; font-style: italic; }
+
+    /* ═══════════════════════════════════════
+       I USED TO THINK / NOW I KNOW
+    ═══════════════════════════════════════ */
+    :root {
+      --utt-old: #9a8a6a;  --utt-old-light: #d4c8a8; --utt-old-dim: rgba(154,138,106,0.08);
+      --utt-new: #8ce3d0;  --utt-new-dim: rgba(140,227,208,0.08);
+    }
+    #page-utt { display: none; flex-direction: column; min-height: 100vh; }
+    .utt-session-pill {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: var(--c-accent-dim); color: var(--c-accent);
+      border: 1px solid var(--c-accent-glow); border-radius: 100px;
+      padding: 4px 12px; font-size: 12px; font-weight: 600;
+    }
+    .utt-top {
+      display: flex; align-items: flex-start; gap: 28px; padding: 20px 32px;
+      border-bottom: 1px solid var(--c-border); flex-shrink: 0;
+      background: rgba(18,15,12,0.7); backdrop-filter: blur(8px);
+    }
+    .utt-hero { flex: 0 0 auto; }
+    .utt-hero h1 {
+      font-size: clamp(18px, 2.2vw, 28px); font-weight: 700; letter-spacing: -.02em;
+      line-height: 1.2; margin-bottom: 4px;
+    }
+    .utt-hero p { font-size: 12px; color: var(--c-muted); }
+    .utt-input-wrap { flex: 1; min-width: 300px; }
+    .utt-input-panel {
+      background: var(--c-surface); border: 1px solid var(--c-border);
+      border-radius: 16px; padding: 14px 16px;
+    }
+    .utt-dual-row { display: flex; gap: 10px; margin-bottom: 10px; }
+    .utt-half {
+      flex: 1; display: flex; flex-direction: column; gap: 5px;
+    }
+    .utt-half-label {
+      font-size: 11px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase;
+    }
+    .utt-half.old .utt-half-label { color: var(--utt-old); }
+    .utt-half.new .utt-half-label { color: var(--utt-new); }
+    .utt-text {
+      width: 100%; background: rgba(255,255,255,0.04); border: 1px solid var(--c-border);
+      border-radius: 10px; padding: 9px 12px; color: var(--c-text);
+      font-family: 'Inter', sans-serif; font-size: 13px; resize: none; height: 70px;
+      outline: none; transition: border-color .2s; line-height: 1.5;
+    }
+    .utt-half.old .utt-text:focus  { border-color: rgba(154,138,106,0.5); }
+    .utt-half.new .utt-text:focus  { border-color: var(--c-accent); }
+    .utt-text::placeholder { color: var(--c-muted2); }
+    .utt-bottom-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .utt-name-input {
+      background: rgba(255,255,255,0.04); border: 1px solid var(--c-border);
+      border-radius: 8px; padding: 8px 10px; color: var(--c-text);
+      font-family: 'Inter', sans-serif; font-size: 12px; outline: none; width: 155px; flex-shrink: 0;
+    }
+    .utt-name-input:focus { border-color: var(--c-accent); }
+    .utt-name-input::placeholder { color: var(--c-muted2); }
+    .utt-submit-btn {
+      padding: 9px 20px; border-radius: 10px; background: var(--c-accent); color: #120f0c;
+      font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 700;
+      cursor: pointer; border: none; transition: all .18s;
+    }
+    .utt-submit-btn:hover { background: #00bfa0; transform: translateY(-1px); }
+    /* Paired responses */
+    .utt-pairs {
+      flex: 1; display: flex; flex-direction: column; gap: 14px;
+      padding: 28px 40px 100px; overflow-y: auto;
+    }
+    .utt-pair-card {
+      display: grid; grid-template-columns: 1fr auto 1fr; gap: 0;
+      background: var(--c-surface); border: 1px solid var(--c-border);
+      border-radius: 16px; overflow: hidden; animation: cardIn .3s ease both;
+    }
+    .utt-pair-side { padding: 18px 22px; }
+    .utt-pair-side.old { border-right: 1px solid var(--c-border); background: linear-gradient(135deg, rgba(154,138,106,0.06) 0%, transparent 100%); }
+    .utt-pair-side.new { background: linear-gradient(135deg, rgba(140,227,208,0.06) 0%, transparent 100%); }
+    .utt-pair-label {
+      font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    .utt-pair-side.old .utt-pair-label { color: var(--utt-old); }
+    .utt-pair-side.new .utt-pair-label { color: var(--utt-new); }
+    .utt-pair-text { font-size: 14px; line-height: 1.65; color: var(--c-text); }
+    .utt-pair-arrow {
+      display: flex; align-items: center; justify-content: center;
+      padding: 0 6px; color: var(--c-muted2); font-size: 18px; flex-shrink: 0;
+      border-right: 1px solid var(--c-border);
+    }
+    .utt-pair-author {
+      font-size: 11px; color: rgba(255,255,255,0.28); margin-top: 10px;
+      font-style: italic; grid-column: 1 / -1; padding: 0 22px 14px;
+      border-top: 1px solid var(--c-border); padding-top: 10px;
+      display: none;
+    }
+    .utt-pair-author:not(:empty) { display: block; }
+    .utt-count-pill {
+      position: fixed; bottom: 22px; right: 22px; z-index: 300;
+      background: var(--c-surface); border: 1px solid var(--c-accent-glow);
+      border-radius: 14px; padding: 10px 18px; display: flex; align-items: center; gap: 10px;
+      font-size: 13px; color: var(--c-muted); box-shadow: 0 4px 20px rgba(0,0,0,.4);
+    }
+    .utt-count-pill strong { color: var(--c-accent); font-size: 20px; font-weight: 700; min-width: 28px; text-align: right; }
 
     /* ═══════════════════════════════════════
        RESPONSIVE
@@ -610,14 +906,20 @@
       .site-header { padding: 12px 18px; }
       .dash-hero { padding: 40px 20px 32px; }
       .create-card { padding: 22px 18px; }
+      .tool-picker { grid-template-columns: 1fr; }
       .input-row { flex-direction: column; }
       .sessions-wrap { padding: 0 18px 60px; }
-      /* On mobile, stack title above input panel */
       .wall-top { flex-direction: column; align-items: stretch; padding: 16px 18px; gap: 14px; }
       .wall-hero h1 { white-space: normal; font-size: 22px; }
       .add-note-wrap { width: 100%; }
       .notes-wall { padding: 16px 12px 100px; gap: 12px; }
       .sticky { width: 154px; min-height: 136px; }
+      .rbt-top { flex-direction: column; align-items: stretch; padding: 16px 18px; gap: 14px; }
+      .rbt-hero h1 { white-space: normal; }
+      .rbt-columns { grid-template-columns: 1fr; }
+      .rbt-column { border-right: none; border-bottom: 1px solid var(--g-border); }
+      .rbt-cat-row { flex-wrap: wrap; }
+      .rbt-bottom-row { flex-wrap: wrap; }
     }
   </style>
 </head>
@@ -626,7 +928,7 @@
 <!-- ════════ LOADING ════════ -->
 <div id="page-loading">
   <div class="spinner"></div>
-  <p style="color:var(--c-muted);font-size:13px;">Loading Wonder Wall…</p>
+  <p style="color:var(--c-muted);font-size:13px;">Loading…</p>
 </div>
 
 <!-- ════════ DASHBOARD ════════ -->
@@ -651,32 +953,57 @@
         <polygon points="414.76 49.34 376.2 49.34 380.37 40.72 410.59 40.72 414.76 49.34"/>
         <path d="M427.81,65.51l-25.53-60.97c-1.15-2.75-3.84-4.53-6.81-4.53s-5.66,1.79-6.81,4.53l-25.5,60.98h11.22l21.07-53.21,21.14,53.21h11.22Z"/>
       </svg>
-      <span class="brand-tag">Wonder Wall</span>
+      <span class="brand-tag">Training Studio</span>
     </a>
-    <span style="font-size:12px;color:var(--c-muted)">Facilitator Studio</span>
+    <span style="font-size:12px;color:var(--c-muted)">Facilitator Dashboard</span>
   </header>
 
-  <div class="dash-hero">
-    <span class="dash-eyebrow">✦ Training Tool</span>
-    <h1>Wonder Wall Studio</h1>
-    <p>Create a session, share the link at the right moment in your training, and watch curiosity unfold live on the wall.</p>
-
+  <!-- ── CREATE ── -->
+  <div class="dash-hero" style="padding-bottom:0">
+    <span class="dash-eyebrow">✦ AutogenAI Training Tools</span>
+    <h1>Create Visible Thinking Tool</h1>
     <div class="create-card">
-      <h2>
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/>
-        </svg>
-        Create a new Wonder Wall
-      </h2>
+      <div class="tool-picker">
+        <button class="tool-tile selected" id="tile-wonder-wall" onclick="selectTool('wonder-wall')">
+          <span class="tool-tile-icon">✦</span>
+          <span class="tool-tile-name">Wonder Wall</span>
+          <span class="tool-tile-desc">Open questions — what are you wondering right now?</span>
+        </button>
+        <button class="tool-tile" id="tile-rose-bud-thorn" onclick="selectTool('rose-bud-thorn')">
+          <span class="tool-tile-icon">🌹</span>
+          <span class="tool-tile-name">Rose, Bud, Thorn</span>
+          <span class="tool-tile-desc">Reflect on what went well, what excites, what challenges</span>
+        </button>
+        <button class="tool-tile" id="tile-word-cloud" onclick="selectTool('word-cloud')">
+          <span class="tool-tile-icon">☁️</span>
+          <span class="tool-tile-name">Word Cloud</span>
+          <span class="tool-tile-desc">Prompt users to share a word or phrase.</span>
+        </button>
+        <button class="tool-tile" id="tile-prompt-sharing" onclick="selectTool('prompt-sharing')">
+          <span class="tool-tile-icon">💬</span>
+          <span class="tool-tile-name">Prompt Sharing</span>
+          <span class="tool-tile-desc">Collect and display AI prompts from participants.</span>
+        </button>
+        <button class="tool-tile" id="tile-provocation" onclick="selectTool('provocation')">
+          <span class="tool-tile-icon">❓</span>
+          <span class="tool-tile-name">Provocation</span>
+          <span class="tool-tile-desc">Pose an open question of your choice and gather responses in real time.</span>
+        </button>
+        <button class="tool-tile" id="tile-used-to-think" onclick="selectTool('used-to-think')">
+          <span class="tool-tile-icon">🔄</span>
+          <span class="tool-tile-name">I Used to Think…</span>
+          <span class="tool-tile-desc">Capture shifts in thinking — before and after.</span>
+        </button>
+      </div>
+      <div style="margin-bottom:8px;font-size:12px;color:var(--c-muted);font-weight:500;letter-spacing:.04em;text-transform:uppercase;text-align:left">Name of Session / Client</div>
       <div class="input-row">
         <input id="inp-session-name" class="field" type="text"
-          placeholder="e.g.  Acme Corp — April 2026"
+          placeholder="e.g. Acme Corp — April 2026"
           maxlength="60"
           onkeydown="if(event.key==='Enter')createSession()"
         />
         <button class="btn btn-primary" onclick="createSession()" style="flex-shrink:0">Create ✦</button>
       </div>
-
       <div class="link-panel" id="link-panel">
         <div class="link-panel-label">✅ Share this link with participants</div>
         <div class="link-row">
@@ -688,14 +1015,19 @@
     </div>
   </div>
 
+  <!-- ── PREVIOUS SESSIONS ── -->
   <div class="sessions-wrap">
     <div class="sessions-heading">
-      All Wonder Walls
+      Previous Sessions
       <span class="session-count" id="session-count-badge">0</span>
+    </div>
+    <div class="multi-delete-bar" id="multi-delete-bar">
+      <span id="multi-delete-label">0 selected</span>
+      <button class="multi-delete-bar-btn" onclick="deleteSelected()">🗑 Delete selected</button>
     </div>
     <div class="sessions-grid" id="sessions-grid">
       <div class="empty-msg">
-        <strong>No Wonder Walls yet</strong>
+        <strong>No sessions yet</strong>
         Create your first one above to get started.
       </div>
     </div>
@@ -733,22 +1065,14 @@
     </div>
   </header>
 
-  <!-- ── Top banner: title left, input right ── -->
   <div class="wall-top">
     <div class="wall-hero">
       <h1>What are you <em>wondering</em> right now?</h1>
-      <p id="wall-subline">There are no right or wrong questions. Add yours and see what others are wondering too.</p>
+      <p>There are no right or wrong questions. Add yours and see what others are wondering too.</p>
     </div>
-
     <div class="add-note-wrap">
       <div class="add-note-panel">
-        <textarea
-          id="note-text"
-          class="note-input"
-          placeholder=""
-          maxlength="200"
-          oninput="updateCharHint()"
-        ></textarea>
+        <textarea id="note-text" class="note-input" placeholder="" maxlength="200" oninput="updateCharHint()"></textarea>
         <div style="display:flex;align-items:center;justify-content:space-between;margin:-6px 0 10px">
           <input id="note-author" class="author-input" type="text" placeholder="Your name (optional)" maxlength="40" />
           <span class="char-hint" id="char-hint">200</span>
@@ -760,42 +1084,381 @@
     </div>
   </div>
 
-  <!-- ── Sticky notes wall ── -->
-  <div class="notes-wall" id="notes-wall">
-    <!-- notes injected here -->
-  </div>
+  <div class="notes-wall" id="notes-wall"></div>
 
-  <!-- Live counter -->
   <div class="wonder-pill">
     <strong id="wonder-count">0</strong>
     <span>wonders on the wall</span>
   </div>
-
-  <!-- Export button (always visible — handy for facilitator) -->
   <div class="export-btn">
-    <button class="btn btn-ghost" onclick="exportNotes()" style="font-size:12px;padding:9px 14px">
-      ⬇ Export wonders
-    </button>
+    <button class="btn btn-ghost" onclick="exportNotes()" style="font-size:12px;padding:9px 14px">⬇ Export wonders</button>
+  </div>
+</div>
+
+<!-- ════════ ROSE, BUD, THORN (participant view) ════════ -->
+<div id="page-rbt">
+  <header class="site-header">
+    <a class="brand" href="?">
+      <svg height="22" viewBox="0 0 444.23 83.97" fill="#f7f4f2" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;display:block">
+        <path d="M133.81,52.86V3.9h-9.8v49.23c0,6.84,5.54,12.38,12.38,12.38h10.23v-8.41h-8.58c-2.34,0-4.24-1.9-4.24-4.24Z"/>
+        <rect x="117.69" y="15.97" width="28.93" height="8.41"/>
+        <path d="M103.82,50.85c-.87,10.75-9.1,15.98-17.75,15.98-10.77,0-18.42-6.96-18.42-18.05V15.97s9.78,0,9.78,0v31.22c0,6.46,4.21,11.23,10.72,11.23,7.22,0,13.06-4.68,13.06-13.05l2.61,5.48Z"/>
+        <rect x="101.21" y="15.97" width="9.78" height="49.53"/>
+        <path d="M193.81,23.8c-2.86-3.58-6.66-6.32-11.11-7.83-2.51-.86-5.23-1.32-8.11-1.32s-5.6.46-8.11,1.32c-4.45,1.51-8.25,4.25-11.11,7.83-3.65,4.56-5.77,10.47-5.77,16.93s2.12,12.38,5.76,16.93c2.86,3.58,6.66,6.33,11.12,7.84,2.51.86,5.23,1.32,8.11,1.32s5.6-.46,8.11-1.32c4.45-1.51,8.26-4.26,11.12-7.84,3.64-4.55,5.76-10.47,5.76-16.93s-2.12-12.38-5.77-16.93ZM159.3,40.74c0-9.35,6.19-17.47,15.28-17.47s15.28,8.12,15.28,17.47-6.19,17.47-15.28,17.47-15.28-8.13-15.28-17.47Z"/>
+        <rect x="434.36" y="0" width="9.87" height="65.51"/>
+        <polygon points="51.61 49.34 13.05 49.34 17.22 40.72 47.44 40.72 51.61 49.34"/>
+        <path d="M296.36,49.52c-2.23,5.26-7.16,8.69-13.54,8.69-8.82,0-14.47-8.25-14.47-17.76s5.65-17.88,14.47-17.88c9.99,0,14.07,8.37,14.07,17.88,0,.68.64,1.33.99,2.34h8.84s.04-.91.04-2.04c0-14.41-8.19-26.09-23.94-26.09-14.01,0-24.25,11.68-24.25,26.09s10.24,26.09,24.25,26.09c11.54,0,20.41-7.22,23.66-17.31h-10.12Z"/>
+        <rect x="266.76" y="35.2" width="35.53" height="7.58"/>
+        <path d="M320.91,30.64c.87-10.75,9.1-15.98,17.75-15.98,10.77,0,18.42,6.96,18.42,18.05v32.8h-9.78v-31.22c0-6.46-4.21-11.23-10.72-11.23-6.96,0-13.06,4.68-13.06,13.05l-2.61-5.48Z"/>
+        <rect x="313.74" y="15.98" width="9.78" height="49.53"/>
+        <path d="M227.26,14.65c-11.83,0-22.26,10.43-22.26,23.86s10.28,23.95,22.26,23.95c13.99,0,19.59-11.72,19.59-23.95s-4.73-23.86-19.59-23.86ZM228.84,54.1c-8.4,0-14.06-6.19-14.06-15.61s5.66-15.61,14.06-15.61,14.06,6.18,14.06,15.61-5.66,15.61-14.06,15.61"/>
+        <path d="M64.66,65.51L39.13,4.53c-1.15-2.75-3.84-4.53-6.81-4.53s-5.66,1.79-6.81,4.53L0,65.51h11.22L32.29,12.29l21.14,53.21h11.22Z"/>
+        <path d="M243.24,15.96v45.11c-.12,9.51-5.83,14.52-14.4,14.52-6.44,0-12.15-3.87-12.94-10.09h-10.16c.97,11.03,10.88,18.47,23.1,18.47,15.17,0,24.08-9.45,24.08-23.95V15.96h-9.69Z"/>
+        <polygon points="414.76 49.34 376.2 49.34 380.37 40.72 410.59 40.72 414.76 49.34"/>
+        <path d="M427.81,65.51l-25.53-60.97c-1.15-2.75-3.84-4.53-6.81-4.53s-5.66,1.79-6.81,4.53l-25.5,60.98h11.22l21.07-53.21,21.14,53.21h11.22Z"/>
+      </svg>
+    </a>
+    <div style="display:flex;align-items:center;gap:10px">
+      <div class="rbt-session-pill">
+        <div class="rbt-live-dot"></div>
+        <span id="rbt-session-label">Session</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Input banner -->
+  <div class="rbt-top">
+    <div class="rbt-hero">
+      <h1>Rose, Bud, Thorn</h1>
+      <p>Select your category and share your reflection.</p>
+    </div>
+    <div class="rbt-input-wrap">
+      <div class="rbt-input-panel">
+        <!-- Category buttons with SVG icons -->
+        <div class="rbt-cat-row">
+          <button class="rbt-cat-btn rose active" id="cat-rose" onclick="selectRBTCat('rose')">
+            <!-- Rose SVG -->
+            <svg width="18" height="18" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+              <g transform="translate(32,30)">
+                <ellipse rx="7" ry="11" cy="-12" fill="#b02850" opacity="0.75"/>
+                <ellipse rx="7" ry="11" cy="-12" fill="#b02850" opacity="0.75" transform="rotate(72)"/>
+                <ellipse rx="7" ry="11" cy="-12" fill="#b02850" opacity="0.75" transform="rotate(144)"/>
+                <ellipse rx="7" ry="11" cy="-12" fill="#b02850" opacity="0.75" transform="rotate(216)"/>
+                <ellipse rx="7" ry="11" cy="-12" fill="#b02850" opacity="0.75" transform="rotate(288)"/>
+                <ellipse rx="6" ry="9" cy="-10" fill="#d04870" transform="rotate(36)"/>
+                <ellipse rx="6" ry="9" cy="-10" fill="#d04870" transform="rotate(108)"/>
+                <ellipse rx="6" ry="9" cy="-10" fill="#d04870" transform="rotate(180)"/>
+                <ellipse rx="6" ry="9" cy="-10" fill="#d04870" transform="rotate(252)"/>
+                <ellipse rx="6" ry="9" cy="-10" fill="#d04870" transform="rotate(324)"/>
+                <circle r="8" fill="#861830"/>
+                <circle r="5" fill="#b02448"/>
+                <circle r="2.5" fill="#d04060"/>
+              </g>
+              <path d="M32 52 Q29 44 31 38" stroke="#3a6428" stroke-width="2" stroke-linecap="round" fill="none"/>
+              <path d="M29 46 Q22 42 24 36" stroke="#3a6428" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+            </svg>
+            Rose
+          </button>
+          <button class="rbt-cat-btn bud" id="cat-bud" onclick="selectRBTCat('bud')">
+            <!-- Bud SVG -->
+            <svg width="18" height="18" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+              <path d="M32 58 Q30 48 31 38" stroke="#3a6428" stroke-width="3" stroke-linecap="round" fill="none"/>
+              <path d="M29 52 Q17 48 19 38 Q26 47 29 52Z" fill="#2a5020"/>
+              <path d="M35 48 Q47 44 45 34 Q38 43 35 48Z" fill="#2a5020"/>
+              <path d="M26 38 Q32 30 38 38 Q36 43 32 44 Q28 43 26 38Z" fill="#3a6428"/>
+              <ellipse cx="32" cy="28" rx="7" ry="11" fill="#3eaa66"/>
+              <path d="M25 33 Q32 20 39 33 Q35 28 32 27 Q29 28 25 33Z" fill="#78d898"/>
+              <ellipse cx="32" cy="20" rx="3.5" ry="5" fill="#aaeec0" opacity="0.6"/>
+            </svg>
+            Bud
+          </button>
+          <button class="rbt-cat-btn thorn" id="cat-thorn" onclick="selectRBTCat('thorn')">
+            <!-- Thorn SVG -->
+            <svg width="18" height="18" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+              <path d="M14 56 Q24 44 36 32 Q46 22 52 12" stroke="#5a4a20" stroke-width="4" stroke-linecap="round" fill="none"/>
+              <path d="M30 38 L14 30 L28 41Z" fill="#7a6a30"/>
+              <path d="M42 26 L56 32 L40 29Z" fill="#7a6a30"/>
+              <path d="M48 16 L60 12 L47 22Z" fill="#6a5a28"/>
+              <path d="M24 50 Q16 42 20 36 Q24 44 24 50Z" fill="#2d5420" opacity="0.55"/>
+              <path d="M38 36 Q46 28 50 34 Q42 36 38 36Z" fill="#2d5420" opacity="0.55"/>
+            </svg>
+            Thorn
+          </button>
+        </div>
+        <textarea id="rbt-text" class="rbt-text-input"
+          placeholder="What are you proud of? What went well?"
+          maxlength="300"
+        ></textarea>
+        <div class="rbt-bottom-row">
+          <input id="rbt-author" class="rbt-author-input" type="text" placeholder="Your name (optional)" maxlength="40"/>
+          <button class="rbt-submit-btn" onclick="addRBTResponse()">Add to garden 🌱</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Three garden columns -->
+  <div class="rbt-columns">
+    <!-- Rose column -->
+    <div class="rbt-column rose" id="rbt-col-rose">
+      <div class="rbt-col-header">
+        <svg width="72" height="72" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+          <g transform="translate(32,30)">
+            <ellipse rx="9" ry="14" cy="-15" fill="#8a1830" opacity="0.7"/>
+            <ellipse rx="9" ry="14" cy="-15" fill="#8a1830" opacity="0.7" transform="rotate(72)"/>
+            <ellipse rx="9" ry="14" cy="-15" fill="#8a1830" opacity="0.7" transform="rotate(144)"/>
+            <ellipse rx="9" ry="14" cy="-15" fill="#8a1830" opacity="0.7" transform="rotate(216)"/>
+            <ellipse rx="9" ry="14" cy="-15" fill="#8a1830" opacity="0.7" transform="rotate(288)"/>
+            <ellipse rx="8" ry="11" cy="-13" fill="#c03060" transform="rotate(36)"/>
+            <ellipse rx="8" ry="11" cy="-13" fill="#c03060" transform="rotate(108)"/>
+            <ellipse rx="8" ry="11" cy="-13" fill="#c03060" transform="rotate(180)"/>
+            <ellipse rx="8" ry="11" cy="-13" fill="#c03060" transform="rotate(252)"/>
+            <ellipse rx="8" ry="11" cy="-13" fill="#c03060" transform="rotate(324)"/>
+            <circle r="11" fill="#6e1028"/>
+            <circle r="7" fill="#a02040"/>
+            <circle r="4" fill="#c83060"/>
+            <circle r="2" fill="#e05878"/>
+          </g>
+          <path d="M32 54 Q28 44 30 37" stroke="#3a6428" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+          <path d="M29 48 Q20 44 22 36" stroke="#3a6428" stroke-width="1.8" stroke-linecap="round" fill="none"/>
+          <path d="M33 44 Q40 40 38 33" stroke="#3a6428" stroke-width="1.8" stroke-linecap="round" fill="none"/>
+        </svg>
+        <span class="rbt-col-title">Rose</span>
+        <span class="rbt-col-desc">What went well?<br>What are you proud of?</span>
+        <span class="rbt-col-count" id="count-rose">0 responses</span>
+      </div>
+    </div>
+
+    <!-- Bud column -->
+    <div class="rbt-column bud" id="rbt-col-bud">
+      <div class="rbt-col-header">
+        <svg width="72" height="72" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+          <path d="M32 60 Q29 48 31 37" stroke="#2d5420" stroke-width="3.5" stroke-linecap="round" fill="none"/>
+          <path d="M28 53 Q13 48 15 35 Q24 46 28 53Z" fill="#1e4018"/>
+          <path d="M36 48 Q50 43 48 30 Q40 42 36 48Z" fill="#1e4018"/>
+          <path d="M25 37 Q32 27 39 37 Q36 42 32 43 Q28 42 25 37Z" fill="#2d5420"/>
+          <ellipse cx="32" cy="26" rx="9" ry="14" fill="#38a05c"/>
+          <path d="M23 32 Q32 17 41 32 Q37 27 32 26 Q27 27 23 32Z" fill="#70d090"/>
+          <ellipse cx="32" cy="15" rx="4.5" ry="7" fill="#a8e8c0" opacity="0.65"/>
+          <ellipse cx="32" cy="11" rx="2.5" ry="3.5" fill="#c8f0d8" opacity="0.5"/>
+        </svg>
+        <span class="rbt-col-title">Bud</span>
+        <span class="rbt-col-desc">What are you excited about?<br>What are you keen to learn more about?</span>
+        <span class="rbt-col-count" id="count-bud">0 responses</span>
+      </div>
+    </div>
+
+    <!-- Thorn column -->
+    <div class="rbt-column thorn" id="rbt-col-thorn">
+      <div class="rbt-col-header">
+        <svg width="72" height="72" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 58 Q22 46 34 34 Q44 23 52 11" stroke="#4a3c18" stroke-width="5" stroke-linecap="round" fill="none"/>
+          <path d="M12 58 Q22 46 34 34 Q44 23 52 11" stroke="#7a6430" stroke-width="3" stroke-linecap="round" fill="none"/>
+          <path d="M29 39 L11 30 L27 42Z" fill="#907840"/>
+          <path d="M41 27 L57 34 L39 30Z" fill="#907840"/>
+          <path d="M48 15 L62 10 L46 22Z" fill="#806830"/>
+          <path d="M21 52 Q12 43 17 35 Q22 45 21 52Z" fill="#2a4818" opacity="0.6"/>
+          <path d="M37 38 Q46 29 51 35 Q43 38 37 38Z" fill="#2a4818" opacity="0.6"/>
+          <path d="M29 46 Q20 40 24 33 Q28 41 29 46Z" fill="#2a4818" opacity="0.4"/>
+        </svg>
+        <span class="rbt-col-title">Thorn</span>
+        <span class="rbt-col-desc">What's been challenging?<br>What needs to be addressed?</span>
+        <span class="rbt-col-count" id="count-thorn">0 responses</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="rbt-count-pill">
+    <strong id="rbt-count">0</strong>
+    <span>in the garden</span>
+  </div>
+  <div class="export-btn">
+    <button class="btn btn-ghost" onclick="exportRBT()" style="font-size:12px;padding:9px 14px;border-color:rgba(100,180,80,0.2);color:rgba(144,216,168,0.7)">⬇ Export responses</button>
+  </div>
+</div>
+
+<!-- ════════ WORD CLOUD (participant view) ════════ -->
+<div id="page-wc">
+  <header class="site-header">
+    <a class="brand" href="?">
+      <svg height="22" viewBox="0 0 444.23 83.97" fill="#f7f4f2" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;display:block">
+        <path d="M133.81,52.86V3.9h-9.8v49.23c0,6.84,5.54,12.38,12.38,12.38h10.23v-8.41h-8.58c-2.34,0-4.24-1.9-4.24-4.24Z"/>
+        <rect x="117.69" y="15.97" width="28.93" height="8.41"/>
+        <path d="M103.82,50.85c-.87,10.75-9.1,15.98-17.75,15.98-10.77,0-18.42-6.96-18.42-18.05V15.97s9.78,0,9.78,0v31.22c0,6.46,4.21,11.23,10.72,11.23,7.22,0,13.06-4.68,13.06-13.05l2.61,5.48Z"/>
+        <rect x="101.21" y="15.97" width="9.78" height="49.53"/>
+        <path d="M193.81,23.8c-2.86-3.58-6.66-6.32-11.11-7.83-2.51-.86-5.23-1.32-8.11-1.32s-5.6.46-8.11,1.32c-4.45,1.51-8.25,4.25-11.11,7.83-3.65,4.56-5.77,10.47-5.77,16.93s2.12,12.38,5.76,16.93c2.86,3.58,6.66,6.33,11.12,7.84,2.51.86,5.23,1.32,8.11,1.32s5.6-.46,8.11-1.32c4.45-1.51,8.26-4.26,11.12-7.84,3.64-4.55,5.76-10.47,5.76-16.93s-2.12-12.38-5.77-16.93ZM159.3,40.74c0-9.35,6.19-17.47,15.28-17.47s15.28,8.12,15.28,17.47-6.19,17.47-15.28,17.47-15.28-8.13-15.28-17.47Z"/>
+        <rect x="434.36" y="0" width="9.87" height="65.51"/>
+        <polygon points="51.61 49.34 13.05 49.34 17.22 40.72 47.44 40.72 51.61 49.34"/>
+        <path d="M296.36,49.52c-2.23,5.26-7.16,8.69-13.54,8.69-8.82,0-14.47-8.25-14.47-17.76s5.65-17.88,14.47-17.88c9.99,0,14.07,8.37,14.07,17.88,0,.68.64,1.33.99,2.34h8.84s.04-.91.04-2.04c0-14.41-8.19-26.09-23.94-26.09-14.01,0-24.25,11.68-24.25,26.09s10.24,26.09,24.25,26.09c11.54,0,20.41-7.22,23.66-17.31h-10.12Z"/>
+        <rect x="266.76" y="35.2" width="35.53" height="7.58"/>
+        <path d="M320.91,30.64c.87-10.75,9.1-15.98,17.75-15.98,10.77,0,18.42,6.96,18.42,18.05v32.8h-9.78v-31.22c0-6.46-4.21-11.23-10.72-11.23-6.96,0-13.06,4.68-13.06,13.05l-2.61-5.48Z"/>
+        <rect x="313.74" y="15.98" width="9.78" height="49.53"/>
+        <path d="M227.26,14.65c-11.83,0-22.26,10.43-22.26,23.86s10.28,23.95,22.26,23.95c13.99,0,19.59-11.72,19.59-23.95s-4.73-23.86-19.59-23.86ZM228.84,54.1c-8.4,0-14.06-6.19-14.06-15.61s5.66-15.61,14.06-15.61,14.06,6.18,14.06,15.61-5.66,15.61-14.06,15.61"/>
+        <path d="M64.66,65.51L39.13,4.53c-1.15-2.75-3.84-4.53-6.81-4.53s-5.66,1.79-6.81,4.53L0,65.51h11.22L32.29,12.29l21.14,53.21h11.22Z"/>
+        <path d="M243.24,15.96v45.11c-.12,9.51-5.83,14.52-14.4,14.52-6.44,0-12.15-3.87-12.94-10.09h-10.16c.97,11.03,10.88,18.47,23.1,18.47,15.17,0,24.08-9.45,24.08-23.95V15.96h-9.69Z"/>
+        <polygon points="414.76 49.34 376.2 49.34 380.37 40.72 410.59 40.72 414.76 49.34"/>
+        <path d="M427.81,65.51l-25.53-60.97c-1.15-2.75-3.84-4.53-6.81-4.53s-5.66,1.79-6.81,4.53l-25.5,60.98h11.22l21.07-53.21,21.14,53.21h11.22Z"/>
+      </svg>
+    </a>
+    <div style="display:flex;align-items:center;gap:10px">
+      <div class="wall-session-pill" id="wc-session-pill">
+        <div class="wall-live-dot"></div>
+        <span id="wc-session-label">Session</span>
+      </div>
+    </div>
+  </header>
+
+  <div class="wc-top">
+    <div class="wc-hero">
+      <h1 id="wc-question">Word Cloud</h1>
+      <p>Type your word or phrase.</p>
+    </div>
+    <div class="wc-input-wrap">
+      <div class="wc-input-row">
+        <input id="wc-text" class="wc-text-input" type="text"
+          placeholder="Type a word or short phrase…"
+          maxlength="40"
+          onkeydown="if(event.key==='Enter')addWord()"
+        />
+        <button class="wc-submit-btn" onclick="addWord()">Add ✦</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="wc-cloud" id="wc-cloud"></div>
+
+  <div class="wc-count-pill">
+    <strong id="wc-count">0</strong>
+    <span>responses</span>
+  </div>
+  <div class="export-btn">
+    <button class="btn btn-ghost" onclick="exportWC()" style="font-size:12px;padding:9px 14px">⬇ Export</button>
+  </div>
+</div>
+
+<!-- ════════ PROMPT SHARING (participant view) ════════ -->
+<div id="page-ps">
+  <header class="site-header" style="background:rgba(9,12,20,0.96);border-bottom:1px solid rgba(122,154,204,0.15)">
+    <a class="brand" href="?">
+      <svg height="22" viewBox="0 0 444.23 83.97" fill="#f7f4f2" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;display:block"><path d="M133.81,52.86V3.9h-9.8v49.23c0,6.84,5.54,12.38,12.38,12.38h10.23v-8.41h-8.58c-2.34,0-4.24-1.9-4.24-4.24Z"/><rect x="117.69" y="15.97" width="28.93" height="8.41"/><path d="M103.82,50.85c-.87,10.75-9.1,15.98-17.75,15.98-10.77,0-18.42-6.96-18.42-18.05V15.97s9.78,0,9.78,0v31.22c0,6.46,4.21,11.23,10.72,11.23,7.22,0,13.06-4.68,13.06-13.05l2.61,5.48Z"/><rect x="101.21" y="15.97" width="9.78" height="49.53"/><path d="M193.81,23.8c-2.86-3.58-6.66-6.32-11.11-7.83-2.51-.86-5.23-1.32-8.11-1.32s-5.6.46-8.11,1.32c-4.45,1.51-8.25,4.25-11.11,7.83-3.65,4.56-5.77,10.47-5.77,16.93s2.12,12.38,5.76,16.93c2.86,3.58,6.66,6.33,11.12,7.84,2.51.86,5.23,1.32,8.11,1.32s5.6-.46,8.11-1.32c4.45-1.51,8.26-4.26,11.12-7.84,3.64-4.55,5.76-10.47,5.76-16.93s-2.12-12.38-5.77-16.93ZM159.3,40.74c0-9.35,6.19-17.47,15.28-17.47s15.28,8.12,15.28,17.47-6.19,17.47-15.28,17.47-15.28-8.13-15.28-17.47Z"/><rect x="434.36" y="0" width="9.87" height="65.51"/><polygon points="51.61 49.34 13.05 49.34 17.22 40.72 47.44 40.72 51.61 49.34"/><path d="M296.36,49.52c-2.23,5.26-7.16,8.69-13.54,8.69-8.82,0-14.47-8.25-14.47-17.76s5.65-17.88,14.47-17.88c9.99,0,14.07,8.37,14.07,17.88,0,.68.64,1.33.99,2.34h8.84s.04-.91.04-2.04c0-14.41-8.19-26.09-23.94-26.09-14.01,0-24.25,11.68-24.25,26.09s10.24,26.09,24.25,26.09c11.54,0,20.41-7.22,23.66-17.31h-10.12Z"/><rect x="266.76" y="35.2" width="35.53" height="7.58"/><path d="M320.91,30.64c.87-10.75,9.1-15.98,17.75-15.98,10.77,0,18.42,6.96,18.42,18.05v32.8h-9.78v-31.22c0-6.46-4.21-11.23-10.72-11.23-6.96,0-13.06,4.68-13.06,13.05l-2.61-5.48Z"/><rect x="313.74" y="15.98" width="9.78" height="49.53"/><path d="M227.26,14.65c-11.83,0-22.26,10.43-22.26,23.86s10.28,23.95,22.26,23.95c13.99,0,19.59-11.72,19.59-23.95s-4.73-23.86-19.59-23.86ZM228.84,54.1c-8.4,0-14.06-6.19-14.06-15.61s5.66-15.61,14.06-15.61,14.06,6.18,14.06,15.61-5.66,15.61-14.06,15.61"/><path d="M64.66,65.51L39.13,4.53c-1.15-2.75-3.84-4.53-6.81-4.53s-5.66,1.79-6.81,4.53L0,65.51h11.22L32.29,12.29l21.14,53.21h11.22Z"/><path d="M243.24,15.96v45.11c-.12,9.51-5.83,14.52-14.4,14.52-6.44,0-12.15-3.87-12.94-10.09h-10.16c.97,11.03,10.88,18.47,23.1,18.47,15.17,0,24.08-9.45,24.08-23.95V15.96h-9.69Z"/><polygon points="414.76 49.34 376.2 49.34 380.37 40.72 410.59 40.72 414.76 49.34"/><path d="M427.81,65.51l-25.53-60.97c-1.15-2.75-3.84-4.53-6.81-4.53s-5.66,1.79-6.81,4.53l-25.5,60.98h11.22l21.07-53.21,21.14,53.21h11.22Z"/></svg>
+    </a>
+    <div class="ps-session-pill"><div class="ps-live-dot"></div><span id="ps-session-label">Session</span></div>
+  </header>
+
+  <div class="ps-top">
+    <h1>Prompt Sharing</h1>
+    <p>Share a prompt you used successfully in this activity here.</p>
+    <div class="ps-prompt-bar">
+      <textarea id="ps-text" class="ps-prompt-input" placeholder="Paste or type your prompt here…" maxlength="1000"></textarea>
+      <div class="ps-providers-row">
+        <span class="ps-providers-label">Source Providers selected:</span>
+        <input id="ps-providers" class="ps-providers-input" type="text" placeholder="e.g. Library, Datasets, Web Search" maxlength="120"/>
+      </div>
+      <button class="ps-send-btn" onclick="addPS()" title="Share prompt">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
+        </svg>
+      </button>
+    </div>
+    <div class="ps-name-row">
+      <input id="ps-author" class="ps-name-input" type="text" placeholder="Your name (optional)" maxlength="40"/>
+    </div>
+  </div>
+
+  <div class="ps-grid" id="ps-grid"></div>
+
+  <div class="ps-count-pill">
+    <strong id="ps-count">0</strong><span>prompts shared</span>
+  </div>
+  <div class="export-btn">
+    <button class="btn btn-ghost" onclick="exportPS()" style="font-size:12px;padding:9px 14px">⬇ Export</button>
+  </div>
+</div>
+
+<!-- ════════ CUSTOMISABLE PROVOCATION (participant view) ════════ -->
+<div id="page-prov">
+  <header class="site-header">
+    <a class="brand" href="?">
+      <svg height="22" viewBox="0 0 444.23 83.97" fill="#f7f4f2" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;display:block"><path d="M133.81,52.86V3.9h-9.8v49.23c0,6.84,5.54,12.38,12.38,12.38h10.23v-8.41h-8.58c-2.34,0-4.24-1.9-4.24-4.24Z"/><rect x="117.69" y="15.97" width="28.93" height="8.41"/><path d="M103.82,50.85c-.87,10.75-9.1,15.98-17.75,15.98-10.77,0-18.42-6.96-18.42-18.05V15.97s9.78,0,9.78,0v31.22c0,6.46,4.21,11.23,10.72,11.23,7.22,0,13.06-4.68,13.06-13.05l2.61,5.48Z"/><rect x="101.21" y="15.97" width="9.78" height="49.53"/><path d="M193.81,23.8c-2.86-3.58-6.66-6.32-11.11-7.83-2.51-.86-5.23-1.32-8.11-1.32s-5.6.46-8.11,1.32c-4.45,1.51-8.25,4.25-11.11,7.83-3.65,4.56-5.77,10.47-5.77,16.93s2.12,12.38,5.76,16.93c2.86,3.58,6.66,6.33,11.12,7.84,2.51.86,5.23,1.32,8.11,1.32s5.6-.46,8.11-1.32c4.45-1.51,8.26-4.26,11.12-7.84,3.64-4.55,5.76-10.47,5.76-16.93s-2.12-12.38-5.77-16.93ZM159.3,40.74c0-9.35,6.19-17.47,15.28-17.47s15.28,8.12,15.28,17.47-6.19,17.47-15.28,17.47-15.28-8.13-15.28-17.47Z"/><rect x="434.36" y="0" width="9.87" height="65.51"/><polygon points="51.61 49.34 13.05 49.34 17.22 40.72 47.44 40.72 51.61 49.34"/><path d="M296.36,49.52c-2.23,5.26-7.16,8.69-13.54,8.69-8.82,0-14.47-8.25-14.47-17.76s5.65-17.88,14.47-17.88c9.99,0,14.07,8.37,14.07,17.88,0,.68.64,1.33.99,2.34h8.84s.04-.91.04-2.04c0-14.41-8.19-26.09-23.94-26.09-14.01,0-24.25,11.68-24.25,26.09s10.24,26.09,24.25,26.09c11.54,0,20.41-7.22,23.66-17.31h-10.12Z"/><rect x="266.76" y="35.2" width="35.53" height="7.58"/><path d="M320.91,30.64c.87-10.75,9.1-15.98,17.75-15.98,10.77,0,18.42,6.96,18.42,18.05v32.8h-9.78v-31.22c0-6.46-4.21-11.23-10.72-11.23-6.96,0-13.06,4.68-13.06,13.05l-2.61-5.48Z"/><rect x="313.74" y="15.98" width="9.78" height="49.53"/><path d="M227.26,14.65c-11.83,0-22.26,10.43-22.26,23.86s10.28,23.95,22.26,23.95c13.99,0,19.59-11.72,19.59-23.95s-4.73-23.86-19.59-23.86ZM228.84,54.1c-8.4,0-14.06-6.19-14.06-15.61s5.66-15.61,14.06-15.61,14.06,6.18,14.06,15.61-5.66,15.61-14.06,15.61"/><path d="M64.66,65.51L39.13,4.53c-1.15-2.75-3.84-4.53-6.81-4.53s-5.66,1.79-6.81,4.53L0,65.51h11.22L32.29,12.29l21.14,53.21h11.22Z"/><path d="M243.24,15.96v45.11c-.12,9.51-5.83,14.52-14.4,14.52-6.44,0-12.15-3.87-12.94-10.09h-10.16c.97,11.03,10.88,18.47,23.1,18.47,15.17,0,24.08-9.45,24.08-23.95V15.96h-9.69Z"/><polygon points="414.76 49.34 376.2 49.34 380.37 40.72 410.59 40.72 414.76 49.34"/><path d="M427.81,65.51l-25.53-60.97c-1.15-2.75-3.84-4.53-6.81-4.53s-5.66,1.79-6.81,4.53l-25.5,60.98h11.22l21.07-53.21,21.14,53.21h11.22Z"/></svg>
+    </a>
+    <div class="wall-session-pill"><div class="wall-live-dot"></div><span id="prov-session-label">Session</span></div>
+  </header>
+
+  <div class="prov-top">
+    <div class="prov-question" id="prov-question">Your question here</div>
+    <div class="prov-input-row">
+      <input id="prov-text" class="prov-text-input" type="text" placeholder="Type your response…" maxlength="300"
+        onkeydown="if(event.key==='Enter')addProv()"/>
+      <input id="prov-author" class="prov-name-input" type="text" placeholder="Your name (optional)" maxlength="40"/>
+      <button class="btn btn-primary" onclick="addProv()" style="flex-shrink:0;white-space:nowrap">Add ✦</button>
+    </div>
+  </div>
+
+  <div class="prov-cards" id="prov-cards"></div>
+
+  <div class="wonder-pill">
+    <strong id="prov-count">0</strong><span>responses</span>
+  </div>
+  <div class="export-btn">
+    <button class="btn btn-ghost" onclick="exportProv()" style="font-size:12px;padding:9px 14px">⬇ Export</button>
+  </div>
+</div>
+
+<!-- ════════ I USED TO THINK / NOW I KNOW (participant view) ════════ -->
+<div id="page-utt">
+  <header class="site-header">
+    <a class="brand" href="?">
+      <svg height="22" viewBox="0 0 444.23 83.97" fill="#f7f4f2" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;display:block"><path d="M133.81,52.86V3.9h-9.8v49.23c0,6.84,5.54,12.38,12.38,12.38h10.23v-8.41h-8.58c-2.34,0-4.24-1.9-4.24-4.24Z"/><rect x="117.69" y="15.97" width="28.93" height="8.41"/><path d="M103.82,50.85c-.87,10.75-9.1,15.98-17.75,15.98-10.77,0-18.42-6.96-18.42-18.05V15.97s9.78,0,9.78,0v31.22c0,6.46,4.21,11.23,10.72,11.23,7.22,0,13.06-4.68,13.06-13.05l2.61,5.48Z"/><rect x="101.21" y="15.97" width="9.78" height="49.53"/><path d="M193.81,23.8c-2.86-3.58-6.66-6.32-11.11-7.83-2.51-.86-5.23-1.32-8.11-1.32s-5.6.46-8.11,1.32c-4.45,1.51-8.25,4.25-11.11,7.83-3.65,4.56-5.77,10.47-5.77,16.93s2.12,12.38,5.76,16.93c2.86,3.58,6.66,6.33,11.12,7.84,2.51.86,5.23,1.32,8.11,1.32s5.6-.46,8.11-1.32c4.45-1.51,8.26-4.26,11.12-7.84,3.64-4.55,5.76-10.47,5.76-16.93s-2.12-12.38-5.77-16.93ZM159.3,40.74c0-9.35,6.19-17.47,15.28-17.47s15.28,8.12,15.28,17.47-6.19,17.47-15.28,17.47-15.28-8.13-15.28-17.47Z"/><rect x="434.36" y="0" width="9.87" height="65.51"/><polygon points="51.61 49.34 13.05 49.34 17.22 40.72 47.44 40.72 51.61 49.34"/><path d="M296.36,49.52c-2.23,5.26-7.16,8.69-13.54,8.69-8.82,0-14.47-8.25-14.47-17.76s5.65-17.88,14.47-17.88c9.99,0,14.07,8.37,14.07,17.88,0,.68.64,1.33.99,2.34h8.84s.04-.91.04-2.04c0-14.41-8.19-26.09-23.94-26.09-14.01,0-24.25,11.68-24.25,26.09s10.24,26.09,24.25,26.09c11.54,0,20.41-7.22,23.66-17.31h-10.12Z"/><rect x="266.76" y="35.2" width="35.53" height="7.58"/><path d="M320.91,30.64c.87-10.75,9.1-15.98,17.75-15.98,10.77,0,18.42,6.96,18.42,18.05v32.8h-9.78v-31.22c0-6.46-4.21-11.23-10.72-11.23-6.96,0-13.06,4.68-13.06,13.05l-2.61-5.48Z"/><rect x="313.74" y="15.98" width="9.78" height="49.53"/><path d="M227.26,14.65c-11.83,0-22.26,10.43-22.26,23.86s10.28,23.95,22.26,23.95c13.99,0,19.59-11.72,19.59-23.95s-4.73-23.86-19.59-23.86ZM228.84,54.1c-8.4,0-14.06-6.19-14.06-15.61s5.66-15.61,14.06-15.61,14.06,6.18,14.06,15.61-5.66,15.61-14.06,15.61"/><path d="M64.66,65.51L39.13,4.53c-1.15-2.75-3.84-4.53-6.81-4.53s-5.66,1.79-6.81,4.53L0,65.51h11.22L32.29,12.29l21.14,53.21h11.22Z"/><path d="M243.24,15.96v45.11c-.12,9.51-5.83,14.52-14.4,14.52-6.44,0-12.15-3.87-12.94-10.09h-10.16c.97,11.03,10.88,18.47,23.1,18.47,15.17,0,24.08-9.45,24.08-23.95V15.96h-9.69Z"/><polygon points="414.76 49.34 376.2 49.34 380.37 40.72 410.59 40.72 414.76 49.34"/><path d="M427.81,65.51l-25.53-60.97c-1.15-2.75-3.84-4.53-6.81-4.53s-5.66,1.79-6.81,4.53l-25.5,60.98h11.22l21.07-53.21,21.14,53.21h11.22Z"/></svg>
+    </a>
+    <div class="utt-session-pill"><div class="wall-live-dot"></div><span id="utt-session-label">Session</span></div>
+  </header>
+
+  <div class="utt-top">
+    <div class="utt-hero">
+      <h1>I used to think…<br>Now I think…</h1>
+      <p>Share a shift in your thinking.</p>
+    </div>
+    <div class="utt-input-wrap">
+      <div class="utt-input-panel">
+        <div class="utt-dual-row">
+          <div class="utt-half old">
+            <span class="utt-half-label">I used to think…</span>
+            <textarea id="utt-old" class="utt-text" placeholder="What did you think before?" maxlength="200"></textarea>
+          </div>
+          <div class="utt-half new">
+            <span class="utt-half-label">Now I think…</span>
+            <textarea id="utt-new" class="utt-text" placeholder="What do you think now?" maxlength="200"></textarea>
+          </div>
+        </div>
+        <div class="utt-bottom-row">
+          <input id="utt-author" class="utt-name-input" type="text" placeholder="Your name (optional)" maxlength="40"/>
+          <button class="utt-submit-btn" onclick="addUTT()">Share ✦</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="utt-pairs" id="utt-pairs"></div>
+
+  <div class="utt-count-pill">
+    <strong id="utt-count">0</strong><span>reflections shared</span>
+  </div>
+  <div class="export-btn">
+    <button class="btn btn-ghost" onclick="exportUTT()" style="font-size:12px;padding:9px 14px">⬇ Export</button>
   </div>
 </div>
 
 <!-- Toast -->
 <div id="toast"></div>
 
-
 <!-- ════════════════════════════════════════════════════════════
   ⚙️  SUPABASE CONFIGURATION
-  ─────────────────────────────────────────────────────────────
-  Replace the two placeholder values below with your own
-  Supabase project URL and anon key.
-  See WONDER-WALL-SETUP.md for step-by-step instructions.
 ══════════════════════════════════════════════════════════════ -->
 <script>
   const SUPABASE_URL      = "https://feokiovttzkheibcoqiv.supabase.co";
   const SUPABASE_ANON_KEY = "sb_publishable_zAEpdRtyM0hJaT-hAPnCmw_JPK68XrD";
 </script>
 
-<!-- Supabase JS SDK (from jsDelivr CDN — no install needed) -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
@@ -803,19 +1466,17 @@
    APP LOGIC
 ════════════════════════════════════════════════════════════ */
 
-// AutogenAI brand-aligned note colours — cycle automatically
 const NOTE_COLORS = [
-  '#c1e5d8',   // T100 — teal tint
-  '#f0ccaf',   // O100 — warm peach
-  '#c5d8eb',   // B100 — blue tint
-  '#f7f4f2',   // N100 — cream
-  '#cdd0f7',   // P100 — lavender
-  '#ddcdbf',   // N300 — warm sand
+  '#c1e5d8', '#f0ccaf', '#c5d8eb', '#f7f4f2', '#cdd0f7', '#ddcdbf',
 ];
 
-let sb          = null;   // Supabase client
-let sessionId   = null;
-let noteCount   = 0;      // used to cycle colours
+let sb               = null;
+let sessionId        = null;
+let noteCount        = 0;
+let selectedTool     = 'wonder-wall';
+let rbtCategory      = 'rose';
+let myName           = localStorage.getItem('ww_facilitator') || null;
+let currentFacilitator = null;
 
 /* ─── Bootstrap ─────────────────────────────────────────── */
 window.addEventListener('load', () => {
@@ -823,14 +1484,11 @@ window.addEventListener('load', () => {
   if (isConfigured) {
     try {
       sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    } catch(e) {
-      console.warn("Supabase init error:", e);
-    }
+    } catch(e) { console.warn("Supabase init error:", e); }
   }
-
   const params = new URLSearchParams(window.location.search);
   const s = params.get('s');
-  if (s) { routeToWall(s); } else { routeToDashboard(); }
+  if (s) { routeToSession(s); } else { routeToDashboard(); }
 });
 
 /* ─── Routing ────────────────────────────────────────────── */
@@ -840,23 +1498,44 @@ function routeToDashboard() {
   if (sb) loadSessions();
 }
 
-async function routeToWall(sid) {
+
+async function routeToSession(sid) {
   sessionId = sid;
   if (!sb) {
     document.getElementById('page-loading').innerHTML =
-      '<p style="color:var(--c-muted);font-size:15px;text-align:center;padding:40px">⚠️ Wonder Wall not yet configured.<br>Please ask your facilitator for help.</p>';
+      '<p style="color:var(--c-muted);font-size:15px;text-align:center;padding:40px">⚠️ Not yet configured.<br>Please ask your facilitator for help.</p>';
     return;
   }
-  const { data: session } = await sb.from('sessions').select('name').eq('id', sid).single();
+  const { data: session } = await sb.from('sessions').select('name, type').eq('id', sid).single();
   if (!session) {
     document.getElementById('page-loading').innerHTML =
-      '<p style="color:var(--c-muted);font-size:15px;text-align:center;padding:40px">Wonder Wall not found. Check your link.</p>';
+      '<p style="color:var(--c-muted);font-size:15px;text-align:center;padding:40px">Session not found. Check your link.</p>';
     return;
   }
-  document.getElementById('wall-session-label').textContent = session.name;
-  hide('page-loading');
-  document.getElementById('page-wall').style.display = 'flex';
-  listenNotes(sid);
+  const type = session.type || 'wonder-wall';
+  if (type === 'rose-bud-thorn') {
+    routeToRBT(sid, session);
+  } else if (type === 'word-cloud') {
+    routeToWC(sid, session);
+  } else if (type === 'prompt-sharing') {
+    routeToPS(sid, session);
+  } else if (type === 'provocation') {
+    routeToProv(sid, session);
+  } else if (type === 'used-to-think') {
+    routeToUTT(sid, session);
+  } else {
+    document.getElementById('wall-session-label').textContent = session.name;
+    hide('page-loading');
+    document.getElementById('page-wall').style.display = 'flex';
+    listenNotes(sid);
+  }
+}
+
+/* ─── Tool picker (dashboard) ────────────────────────────── */
+function selectTool(type) {
+  selectedTool = type;
+  document.querySelectorAll('.tool-tile').forEach(t => t.classList.remove('selected'));
+  document.getElementById('tile-' + type).classList.add('selected');
 }
 
 /* ─── Dashboard: create + list sessions ─────────────────── */
@@ -872,7 +1551,9 @@ async function createSession() {
     .slice(0, 36)
     + '-' + Date.now().toString(36);
 
-  const { error } = await sb.from('sessions').insert([{ id: slug, name, created_at: Date.now() }]);
+  const { error } = await sb.from('sessions').insert([{
+    id: slug, name, type: selectedTool, created_at: Date.now()
+  }]);
   if (error) { showToast('Error creating session — check console'); console.error(error); return; }
 
   const url = `${location.origin}${location.pathname}?s=${encodeURIComponent(slug)}`;
@@ -881,7 +1562,14 @@ async function createSession() {
   document.getElementById('link-open').href = url;
   document.getElementById('link-panel').style.display = 'block';
   inp.value = '';
-  showToast('✨ Wonder Wall created!');
+  const toastLabels = {
+    'rose-bud-thorn': '🌱 Garden created!',
+    'word-cloud': '☁️ Word Cloud created!',
+    'prompt-sharing': '💬 Prompt session created!',
+    'provocation': '❓ Provocation created!',
+    'used-to-think': '🔄 Reflection session created!'
+  };
+  showToast(toastLabels[selectedTool] || '✨ Session created!');
   loadSessions();
 }
 
@@ -892,50 +1580,79 @@ function copyLink() {
 
 async function loadSessions() {
   const [{ data: sessions }, { data: allNotes }] = await Promise.all([
-    sb.from('sessions').select('id, name, created_at').order('created_at', { ascending: false }),
+    sb.from('sessions').select('id, name, created_at, type')
+      .order('created_at', { ascending: false }),
     sb.from('notes').select('session_id')
   ]);
-
-  // Count notes per session
   const counts = {};
   (allNotes || []).forEach(n => { counts[n.session_id] = (counts[n.session_id] || 0) + 1; });
-
   const list = (sessions || []).map(s => ({ ...s, count: counts[s.id] || 0 }));
   document.getElementById('session-count-badge').textContent = list.length;
   const grid = document.getElementById('sessions-grid');
 
   if (!list.length) {
-    grid.innerHTML = '<div class="empty-msg"><strong>No Wonder Walls yet</strong>Create your first one above to get started.</div>';
+    grid.innerHTML = `<div class="empty-msg"><strong>No sessions yet</strong>Create your first one above to get started.</div>`;
     return;
   }
 
-  grid.innerHTML = list.map(s => `
+  grid.innerHTML = list.map(s => {
+    const tIcon = { 'rose-bud-thorn':'🌹', 'word-cloud':'☁️', 'prompt-sharing':'💬', 'provocation':'❓', 'used-to-think':'🔄' }[s.type] || '✦';
+    const tName = { 'rose-bud-thorn':'Rose, Bud, Thorn', 'word-cloud':'Word Cloud', 'prompt-sharing':'Prompt Sharing', 'provocation':'Provocation', 'used-to-think':'I Used to Think' }[s.type] || 'Wonder Wall';
+    return `
     <div class="session-card-wrap">
-      <a class="session-card" href="?s=${encodeURIComponent(s.id)}" target="_blank">
+      <input type="checkbox" class="session-cb" data-id="${esc(s.id)}" data-name="${esc(s.name)}" onchange="updateMultiBar()" title="Select for deletion"/>
+      <a class="session-card" href="?s=${encodeURIComponent(s.id)}" target="_blank" style="padding-left:36px">
         <div class="sc-name">${esc(s.name)}</div>
+        <div class="sc-type">${tIcon} ${tName}</div>
         <div class="sc-date">${fmtDate(s.created_at)}</div>
         <div class="sc-count">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
             <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
           </svg>
-          ${s.count} wonder${s.count!==1?'s':''}
+          ${s.count} response${s.count!==1?'s':''}
         </div>
       </a>
-      <button class="delete-btn" onclick="deleteSession('${esc(s.id)}', '${esc(s.name)}')" title="Delete this wall">
+      <button class="delete-btn" onclick="deleteSession('${esc(s.id)}', '${esc(s.name)}')" title="Delete this session">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-          <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/>
+          <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+          <path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/>
         </svg>
         Delete
       </button>
-    </div>
-  `).join('');
+    </div>`;
+  }).join('');
 }
 
 async function deleteSession(id, name) {
-  if (!confirm(`Delete "${name}" and all its wonders? This cannot be undone.`)) return;
+  if (!confirm(`Delete "${name}" and all its responses? This cannot be undone.`)) return;
   await sb.from('notes').delete().eq('session_id', id);
   await sb.from('sessions').delete().eq('id', id);
-  showToast('🗑 Wall deleted');
+  showToast('🗑 Session deleted');
+  loadSessions();
+}
+
+function updateMultiBar() {
+  const checked = document.querySelectorAll('.session-cb:checked');
+  const bar = document.getElementById('multi-delete-bar');
+  const label = document.getElementById('multi-delete-label');
+  if (checked.length > 0) {
+    bar.classList.add('visible');
+    label.textContent = `${checked.length} session${checked.length !== 1 ? 's' : ''} selected`;
+  } else {
+    bar.classList.remove('visible');
+  }
+}
+
+async function deleteSelected() {
+  const checked = [...document.querySelectorAll('.session-cb:checked')];
+  if (!checked.length) return;
+  const names = checked.map(c => c.dataset.name).join('", "');
+  if (!confirm(`Delete ${checked.length} session${checked.length!==1?'s':''} ("${names}") and all their responses? This cannot be undone.`)) return;
+  for (const cb of checked) {
+    await sb.from('notes').delete().eq('session_id', cb.dataset.id);
+    await sb.from('sessions').delete().eq('id', cb.dataset.id);
+  }
+  showToast(`🗑 ${checked.length} session${checked.length!==1?'s':''} deleted`);
   loadSessions();
 }
 
@@ -945,7 +1662,6 @@ async function addNote() {
   const author = document.getElementById('note-author').value.trim();
   if (!text) { document.getElementById('note-text').focus(); showToast('Write something first!'); return; }
   if (!sb || !sessionId) return;
-
   const rotation = +(Math.random() * 7 - 3.5).toFixed(1);
   const color = NOTE_COLORS[noteCount % NOTE_COLORS.length];
   const { error } = await sb.from('notes').insert([{
@@ -960,40 +1676,30 @@ async function addNote() {
 
 async function listenNotes(sid) {
   const rendered = new Set();
-
-  // Load existing notes
   const { data: existing } = await sb.from('notes')
     .select('*').eq('session_id', sid).order('created_at', { ascending: true });
-
   (existing || []).forEach(note => {
-    renderNote(note.id, note);
-    rendered.add(note.id);
-    noteCount++;
+    renderNote(note.id, note); rendered.add(note.id); noteCount++;
   });
   document.getElementById('wonder-count').textContent = rendered.size;
-
-  // Subscribe to new notes in real time
   sb.channel(`notes-${sid}`)
     .on('postgres_changes',
       { event: 'INSERT', schema: 'public', table: 'notes', filter: `session_id=eq.${sid}` },
       ({ new: note }) => {
         if (!rendered.has(note.id)) {
-          rendered.add(note.id);
-          noteCount++;
+          rendered.add(note.id); noteCount++;
           renderNote(note.id, note);
           document.getElementById('wonder-count').textContent = rendered.size;
         }
       }
-    )
-    .subscribe();
+    ).subscribe();
 }
 
 function renderNote(id, note) {
   const wall = document.getElementById('notes-wall');
   if (wall.querySelector(`[data-id="${id}"]`)) return;
   const el = document.createElement('div');
-  el.className = 'sticky';
-  el.dataset.id = id;
+  el.className = 'sticky'; el.dataset.id = id;
   el.style.background = note.color || '#f7f4f2';
   el.style.setProperty('--r', `${note.rotation || 0}deg`);
   el.innerHTML = `
@@ -1001,6 +1707,472 @@ function renderNote(id, note) {
     ${note.author ? `<div class="sticky-author">— ${esc(note.author)}</div>` : ''}
   `;
   wall.appendChild(el);
+}
+
+/* ─── Word Cloud ─────────────────────────────────────────── */
+const WC_COLORS = ['#8ce3d0','#f0ccaf','#c5d8eb','#cdd0f7','#c1e5d8','#ddcdbf','#7a9acc','#f7f4f2'];
+const wcWords = {};   // key: normalised word → { display, count, el }
+let wcTotal = 0;
+
+function wcColor(word) {
+  let h = 0;
+  for (let i = 0; i < word.length; i++) h = (h * 31 + word.charCodeAt(i)) & 0xffff;
+  return WC_COLORS[h % WC_COLORS.length];
+}
+
+function wcSize(count) {
+  return Math.min(72, 16 + (count - 1) * 12);
+}
+
+function routeToWC(sid, session) {
+  document.getElementById('wc-question').textContent = session.name;
+  document.getElementById('wc-session-label').textContent = session.name;
+  hide('page-loading');
+  document.getElementById('page-wc').style.display = 'flex';
+  listenWC(sid);
+}
+
+async function addWord() {
+  const inp  = document.getElementById('wc-text');
+  const text = inp.value.trim();
+  if (!text) { inp.focus(); showToast('Type something first!'); return; }
+  if (!sb || !sessionId) return;
+  const { error } = await sb.from('notes').insert([{
+    session_id: sessionId, text,
+    color: 'word-cloud', rotation: 0, created_at: Date.now()
+  }]);
+  if (error) { console.error(error); showToast('Something went wrong — try again'); return; }
+  inp.value = '';
+  showToast('✦ Added to the cloud!');
+}
+
+async function listenWC(sid) {
+  const { data: existing } = await sb.from('notes')
+    .select('*').eq('session_id', sid).order('created_at', { ascending: true });
+  (existing || []).forEach(n => addWordToCloud(n.text));
+  updateWCCount();
+
+  sb.channel(`wc-${sid}`)
+    .on('postgres_changes',
+      { event: 'INSERT', schema: 'public', table: 'notes', filter: `session_id=eq.${sid}` },
+      ({ new: n }) => { addWordToCloud(n.text); updateWCCount(); }
+    ).subscribe();
+}
+
+function addWordToCloud(text) {
+  const key = text.trim().toLowerCase();
+  if (!key) return;
+  wcTotal++;
+  if (wcWords[key]) {
+    wcWords[key].count++;
+    wcWords[key].el.style.fontSize = wcSize(wcWords[key].count) + 'px';
+  } else {
+    const el = document.createElement('span');
+    el.className = 'wc-word';
+    el.textContent = text.trim();
+    el.style.fontSize = wcSize(1) + 'px';
+    el.style.color = wcColor(key);
+    el.style.position = 'relative';
+    el.style.top = (Math.random() * 40 - 20) + 'px';
+    document.getElementById('wc-cloud').appendChild(el);
+    wcWords[key] = { display: text.trim(), count: 1, el };
+  }
+}
+
+function updateWCCount() {
+  document.getElementById('wc-count').textContent = wcTotal;
+}
+
+async function exportWC() {
+  if (!sb || !sessionId) { showToast('Nothing to export yet'); return; }
+  const [{ data: session }, { data: notes }] = await Promise.all([
+    sb.from('sessions').select('name').eq('id', sessionId).single(),
+    sb.from('notes').select('text').eq('session_id', sessionId).order('created_at', { ascending: true })
+  ]);
+  const name = session?.name || sessionId;
+  const freq = {};
+  (notes||[]).forEach(n => { const k = n.text.trim().toLowerCase(); freq[k] = (freq[k]||0) + 1; });
+  const sorted = Object.entries(freq).sort((a,b) => b[1]-a[1]);
+  const lines = [
+    `AutogenAI Word Cloud — ${name}`,
+    `Exported: ${new Date().toLocaleString('en-GB')}`,
+    `Total responses: ${(notes||[]).length}`,
+    '─'.repeat(50), '',
+    ...sorted.map(([w,c]) => `${w} (×${c})`)
+  ];
+  const blob = new Blob([lines.join('\n')], { type: 'text/plain' });
+  const a = Object.assign(document.createElement('a'), {
+    href: URL.createObjectURL(blob),
+    download: `word-cloud-${name.replace(/[^a-z0-9]/gi,'-').toLowerCase()}.txt`
+  });
+  a.click(); showToast('📄 Export downloaded!');
+}
+
+/* ─── Rose, Bud, Thorn ───────────────────────────────────── */
+function routeToRBT(sid, session) {
+  document.body.classList.add('garden-mode');
+  document.getElementById('rbt-session-label').textContent = session.name;
+  hide('page-loading');
+  document.getElementById('page-rbt').style.display = 'flex';
+  listenRBT(sid);
+}
+
+function selectRBTCat(cat) {
+  rbtCategory = cat;
+  document.querySelectorAll('.rbt-cat-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('cat-' + cat).classList.add('active');
+  const placeholders = {
+    rose:  'What went well? What are you proud of?',
+    bud:   'What are you excited about? What are you keen to learn more about?',
+    thorn: 'What\'s been challenging? What needs to be addressed?'
+  };
+  document.getElementById('rbt-text').placeholder = placeholders[cat];
+}
+
+async function addRBTResponse() {
+  const text   = document.getElementById('rbt-text').value.trim();
+  const author = document.getElementById('rbt-author').value.trim();
+  if (!text) { document.getElementById('rbt-text').focus(); showToast('Write something first!'); return; }
+  if (!sb || !sessionId) return;
+  const { error } = await sb.from('notes').insert([{
+    session_id: sessionId, text, author: author || null,
+    category: rbtCategory, color: rbtCategory, rotation: 0, created_at: Date.now()
+  }]);
+  if (error) { console.error(error); showToast('Something went wrong — try again'); return; }
+  document.getElementById('rbt-text').value = '';
+  showToast('🌱 Added to the garden!');
+}
+
+async function listenRBT(sid) {
+  const rendered = new Set();
+  const counts = { rose: 0, bud: 0, thorn: 0 };
+
+  const { data: existing } = await sb.from('notes')
+    .select('*').eq('session_id', sid).order('created_at', { ascending: true });
+
+  (existing || []).forEach(note => {
+    renderRBTCard(note.id, note, counts); rendered.add(note.id);
+  });
+  updateRBTCounts(counts);
+  document.getElementById('rbt-count').textContent = rendered.size;
+
+  sb.channel(`rbt-${sid}`)
+    .on('postgres_changes',
+      { event: 'INSERT', schema: 'public', table: 'notes', filter: `session_id=eq.${sid}` },
+      ({ new: note }) => {
+        if (!rendered.has(note.id)) {
+          rendered.add(note.id);
+          const cat = note.category || 'bud';
+          counts[cat] = (counts[cat] || 0) + 1;
+          renderRBTCard(note.id, note, counts);
+          updateRBTCounts(counts);
+          document.getElementById('rbt-count').textContent = rendered.size;
+        }
+      }
+    ).subscribe();
+}
+
+function renderRBTCard(id, note, counts) {
+  const cat = note.category || 'bud';
+  const col = document.getElementById('rbt-col-' + cat);
+  if (!col || col.querySelector(`[data-id="${id}"]`)) return;
+  if (counts) counts[cat] = (counts[cat] || 0) + 1;
+  const card = document.createElement('div');
+  card.className = 'rbt-card'; card.dataset.id = id;
+  card.innerHTML = `
+    ${esc(note.text)}
+    ${note.author ? `<div class="rbt-card-author">— ${esc(note.author)}</div>` : ''}
+  `;
+  col.appendChild(card);
+}
+
+function updateRBTCounts(counts) {
+  const labels = { rose: 'response', bud: 'response', thorn: 'response' };
+  ['rose','bud','thorn'].forEach(cat => {
+    const n = counts[cat] || 0;
+    const el = document.getElementById('count-' + cat);
+    if (el) el.textContent = `${n} ${labels[cat]}${n!==1?'s':''}`;
+  });
+}
+
+/* ─── Prompt Sharing ─────────────────────────────────────── */
+function routeToPS(sid, session) {
+  document.getElementById('ps-session-label').textContent = session.name;
+  hide('page-loading');
+  document.getElementById('page-ps').style.display = 'flex';
+  listenPS(sid);
+}
+
+async function addPS() {
+  const text      = document.getElementById('ps-text').value.trim();
+  const author    = document.getElementById('ps-author').value.trim();
+  const providers = document.getElementById('ps-providers').value.trim();
+  if (!text) { document.getElementById('ps-text').focus(); showToast('Paste or type a prompt first!'); return; }
+  if (!sb || !sessionId) return;
+  const { error } = await sb.from('notes').insert([{
+    session_id: sessionId, text, author: author || null,
+    category: providers || null, color: 'prompt', rotation: 0, created_at: Date.now()
+  }]);
+  if (error) { console.error(error); showToast('Something went wrong — try again'); return; }
+  document.getElementById('ps-text').value = '';
+  document.getElementById('ps-providers').value = '';
+  showToast('💬 Prompt shared!');
+}
+
+async function listenPS(sid) {
+  const rendered = new Set();
+  const { data: existing } = await sb.from('notes')
+    .select('*').eq('session_id', sid).order('created_at', { ascending: true });
+  (existing || []).forEach(n => { renderPSCard(n.id, n); rendered.add(n.id); });
+  document.getElementById('ps-count').textContent = rendered.size;
+
+  sb.channel(`ps-${sid}`)
+    .on('postgres_changes',
+      { event: 'INSERT', schema: 'public', table: 'notes', filter: `session_id=eq.${sid}` },
+      ({ new: n }) => {
+        if (!rendered.has(n.id)) {
+          rendered.add(n.id);
+          renderPSCard(n.id, n);
+          document.getElementById('ps-count').textContent = rendered.size;
+        }
+      }
+    ).subscribe();
+}
+
+function renderPSCard(id, note) {
+  const grid = document.getElementById('ps-grid');
+  if (grid.querySelector(`[data-id="${id}"]`)) return;
+  const card = document.createElement('div');
+  card.className = 'ps-card'; card.dataset.id = id;
+  const safeText = note.text.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+  card.innerHTML = `
+    <div class="ps-card-text">${esc(note.text)}</div>
+    <div class="ps-card-footer">
+      <span class="ps-card-author">${note.author ? `— ${esc(note.author)}` : ''}</span>
+      <button class="ps-copy-btn" onclick="navigator.clipboard.writeText('${safeText}').then(()=>showToast('✅ Copied!'))">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        Copy
+      </button>
+    </div>
+    ${note.category ? `<div class="ps-card-providers">You have picked Source Providers: <strong>${esc(note.category)}</strong></div>` : ''}
+  `;
+  grid.appendChild(card);
+}
+
+async function exportPS() {
+  if (!sb || !sessionId) { showToast('Nothing to export yet'); return; }
+  const [{ data: session }, { data: notes }] = await Promise.all([
+    sb.from('sessions').select('name').eq('id', sessionId).single(),
+    sb.from('notes').select('*').eq('session_id', sessionId).order('created_at', { ascending: true })
+  ]);
+  const name = session?.name || sessionId;
+  const lines = [
+    `AutogenAI Prompt Sharing — ${name}`,
+    `Exported: ${new Date().toLocaleString('en-GB')}`,
+    `Prompts shared: ${(notes||[]).length}`,
+    '─'.repeat(50), '',
+    ...(notes||[]).map((n,i) => `${i+1}. ${n.text}${n.author ? `\n   — ${n.author}` : ''}`)
+  ];
+  const blob = new Blob([lines.join('\n')], { type: 'text/plain' });
+  const a = Object.assign(document.createElement('a'), {
+    href: URL.createObjectURL(blob),
+    download: `prompt-sharing-${name.replace(/[^a-z0-9]/gi,'-').toLowerCase()}.txt`
+  });
+  a.click(); showToast('📄 Export downloaded!');
+}
+
+/* ─── Customisable Provocation ───────────────────────────── */
+function routeToProv(sid, session) {
+  document.getElementById('prov-session-label').textContent = session.name;
+  // Use the session name as the provocation question
+  const q = document.getElementById('prov-question');
+  q.innerHTML = esc(session.name);
+  hide('page-loading');
+  document.getElementById('page-prov').style.display = 'flex';
+  listenProv(sid);
+}
+
+async function addProv() {
+  const text   = document.getElementById('prov-text').value.trim();
+  const author = document.getElementById('prov-author').value.trim();
+  if (!text) { document.getElementById('prov-text').focus(); showToast('Type your response first!'); return; }
+  if (!sb || !sessionId) return;
+  const { error } = await sb.from('notes').insert([{
+    session_id: sessionId, text, author: author || null,
+    color: 'provocation', rotation: 0, created_at: Date.now()
+  }]);
+  if (error) { console.error(error); showToast('Something went wrong — try again'); return; }
+  document.getElementById('prov-text').value = '';
+  showToast('✦ Response added!');
+}
+
+async function listenProv(sid) {
+  const rendered = new Set();
+  const { data: existing } = await sb.from('notes')
+    .select('*').eq('session_id', sid).order('created_at', { ascending: true });
+  (existing || []).forEach(n => { renderProvCard(n.id, n); rendered.add(n.id); });
+  document.getElementById('prov-count').textContent = rendered.size;
+
+  sb.channel(`prov-${sid}`)
+    .on('postgres_changes',
+      { event: 'INSERT', schema: 'public', table: 'notes', filter: `session_id=eq.${sid}` },
+      ({ new: n }) => {
+        if (!rendered.has(n.id)) {
+          rendered.add(n.id);
+          renderProvCard(n.id, n);
+          document.getElementById('prov-count').textContent = rendered.size;
+        }
+      }
+    ).subscribe();
+}
+
+function renderProvCard(id, note) {
+  const grid = document.getElementById('prov-cards');
+  if (grid.querySelector(`[data-id="${id}"]`)) return;
+  const card = document.createElement('div');
+  card.className = 'prov-card'; card.dataset.id = id;
+  card.innerHTML = `
+    <div class="prov-card-text">${esc(note.text)}</div>
+    ${note.author ? `<div class="prov-card-author">— ${esc(note.author)}</div>` : ''}
+  `;
+  grid.appendChild(card);
+}
+
+async function exportProv() {
+  if (!sb || !sessionId) { showToast('Nothing to export yet'); return; }
+  const [{ data: session }, { data: notes }] = await Promise.all([
+    sb.from('sessions').select('name').eq('id', sessionId).single(),
+    sb.from('notes').select('*').eq('session_id', sessionId).order('created_at', { ascending: true })
+  ]);
+  const name = session?.name || sessionId;
+  const lines = [
+    `AutogenAI Provocation — ${name}`,
+    `Exported: ${new Date().toLocaleString('en-GB')}`,
+    `Responses: ${(notes||[]).length}`,
+    '─'.repeat(50), '',
+    `Question: ${name}`, '',
+    ...(notes||[]).map((n,i) => `${i+1}. ${n.text}${n.author ? `\n   — ${n.author}` : ''}`)
+  ];
+  const blob = new Blob([lines.join('\n')], { type: 'text/plain' });
+  const a = Object.assign(document.createElement('a'), {
+    href: URL.createObjectURL(blob),
+    download: `provocation-${name.replace(/[^a-z0-9]/gi,'-').toLowerCase()}.txt`
+  });
+  a.click(); showToast('📄 Export downloaded!');
+}
+
+/* ─── I Used to Think / Now I Think ─────────────────────── */
+function routeToUTT(sid, session) {
+  document.getElementById('utt-session-label').textContent = session.name;
+  hide('page-loading');
+  document.getElementById('page-utt').style.display = 'flex';
+  listenUTT(sid);
+}
+
+async function addUTT() {
+  const oldText = document.getElementById('utt-old').value.trim();
+  const newText = document.getElementById('utt-new').value.trim();
+  const author  = document.getElementById('utt-author').value.trim();
+  if (!oldText || !newText) {
+    showToast('Fill in both sides before sharing!');
+    if (!oldText) document.getElementById('utt-old').focus();
+    return;
+  }
+  if (!sb || !sessionId) return;
+  const text = `${oldText}|||${newText}`;
+  const { error } = await sb.from('notes').insert([{
+    session_id: sessionId, text, author: author || null,
+    color: 'utt', rotation: 0, created_at: Date.now()
+  }]);
+  if (error) { console.error(error); showToast('Something went wrong — try again'); return; }
+  document.getElementById('utt-old').value = '';
+  document.getElementById('utt-new').value = '';
+  showToast('🔄 Reflection shared!');
+}
+
+async function listenUTT(sid) {
+  const rendered = new Set();
+  let total = 0;
+  const counts = { old: 0, new: 0 };
+
+  const { data: existing } = await sb.from('notes')
+    .select('*').eq('session_id', sid).order('created_at', { ascending: true });
+  (existing || []).forEach(n => {
+    renderUTTCards(n.id, n, counts); rendered.add(n.id); total++;
+  });
+  document.getElementById('utt-count').textContent = total;
+  updateUTTCounts(counts);
+
+  sb.channel(`utt-${sid}`)
+    .on('postgres_changes',
+      { event: 'INSERT', schema: 'public', table: 'notes', filter: `session_id=eq.${sid}` },
+      ({ new: n }) => {
+        if (!rendered.has(n.id)) {
+          rendered.add(n.id); total++;
+          renderUTTCards(n.id, n, counts);
+          document.getElementById('utt-count').textContent = total;
+          updateUTTCounts(counts);
+        }
+      }
+    ).subscribe();
+}
+
+function renderUTTCards(id, note, counts) {
+  const pairs = document.getElementById('utt-pairs');
+  if (!pairs || pairs.querySelector(`[data-id="${id}"]`)) return;
+
+  const parts = (note.text || '').split('|||');
+  const oldText = parts[0] || '';
+  const newText = parts[1] || '';
+
+  const card = document.createElement('div');
+  card.className = 'utt-pair-card'; card.dataset.id = id;
+  card.innerHTML = `
+    <div class="utt-pair-side old">
+      <div class="utt-pair-label">I used to think…</div>
+      <div class="utt-pair-text">${esc(oldText)}</div>
+    </div>
+    <div class="utt-pair-arrow">→</div>
+    <div class="utt-pair-side new">
+      <div class="utt-pair-label">Now I think…</div>
+      <div class="utt-pair-text">${esc(newText)}</div>
+    </div>
+    ${note.author ? `<div class="utt-pair-author">— ${esc(note.author)}</div>` : ''}
+  `;
+  pairs.appendChild(card);
+  counts.total = (counts.total || 0) + 1;
+}
+
+function updateUTTCounts(counts) { /* counts tracked via utt-count pill */ }
+
+async function exportUTT() {
+  if (!sb || !sessionId) { showToast('Nothing to export yet'); return; }
+  const [{ data: session }, { data: notes }] = await Promise.all([
+    sb.from('sessions').select('name').eq('id', sessionId).single(),
+    sb.from('notes').select('*').eq('session_id', sessionId).order('created_at', { ascending: true })
+  ]);
+  const name = session?.name || sessionId;
+  const lines = [
+    `AutogenAI I Used to Think / Now I Think — ${name}`,
+    `Exported: ${new Date().toLocaleString('en-GB')}`,
+    `Reflections: ${(notes||[]).length}`,
+    '─'.repeat(50), '',
+    ...(notes||[]).flatMap((n,i) => {
+      const parts = (n.text || '').split('|||');
+      return [
+        `${i+1}. ${n.author ? `[${n.author}]` : ''}`,
+        `   I used to think: ${parts[0] || ''}`,
+        `   Now I think:     ${parts[1] || ''}`,
+        ''
+      ];
+    })
+  ];
+  const blob = new Blob([lines.join('\n')], { type: 'text/plain' });
+  const a = Object.assign(document.createElement('a'), {
+    href: URL.createObjectURL(blob),
+    download: `used-to-think-${name.replace(/[^a-z0-9]/gi,'-').toLowerCase()}.txt`
+  });
+  a.click(); showToast('📄 Export downloaded!');
 }
 
 /* ─── Export ─────────────────────────────────────────────── */
@@ -1015,8 +2187,7 @@ async function exportNotes() {
     `AutogenAI Wonder Wall — ${name}`,
     `Exported: ${new Date().toLocaleString('en-GB')}`,
     `Wonders captured: ${(notes||[]).length}`,
-    '─'.repeat(50),
-    '',
+    '─'.repeat(50), '',
     ...(notes||[]).map((n,i) => `${i+1}. ${n.text}${n.author ? `\n   — ${n.author}` : ''}`)
   ];
   const blob = new Blob([lines.join('\n')], { type: 'text/plain' });
@@ -1024,8 +2195,41 @@ async function exportNotes() {
     href: URL.createObjectURL(blob),
     download: `wonder-wall-${name.replace(/[^a-z0-9]/gi,'-').toLowerCase()}.txt`
   });
-  a.click();
-  showToast('📄 Export downloaded!');
+  a.click(); showToast('📄 Export downloaded!');
+}
+
+async function exportRBT() {
+  if (!sb || !sessionId) { showToast('Nothing to export yet'); return; }
+  const [{ data: session }, { data: notes }] = await Promise.all([
+    sb.from('sessions').select('name').eq('id', sessionId).single(),
+    sb.from('notes').select('*').eq('session_id', sessionId).order('created_at', { ascending: true })
+  ]);
+  const name = session?.name || sessionId;
+  const sections = { rose: [], bud: [], thorn: [] };
+  (notes||[]).forEach(n => {
+    const cat = n.category || 'bud';
+    if (sections[cat]) sections[cat].push(n);
+  });
+  const lines = [
+    `AutogenAI Rose, Bud, Thorn — ${name}`,
+    `Exported: ${new Date().toLocaleString('en-GB')}`,
+    `Total responses: ${(notes||[]).length}`,
+    '─'.repeat(50), '',
+    '🌹 ROSE — What went well?',
+    ...sections.rose.map((n,i) => `  ${i+1}. ${n.text}${n.author ? ` — ${n.author}` : ''}`),
+    '',
+    '🌱 BUD — What could grow?',
+    ...sections.bud.map((n,i) => `  ${i+1}. ${n.text}${n.author ? ` — ${n.author}` : ''}`),
+    '',
+    '🌿 THORN — What was challenging?',
+    ...sections.thorn.map((n,i) => `  ${i+1}. ${n.text}${n.author ? ` — ${n.author}` : ''}`)
+  ];
+  const blob = new Blob([lines.join('\n')], { type: 'text/plain' });
+  const a = Object.assign(document.createElement('a'), {
+    href: URL.createObjectURL(blob),
+    download: `rose-bud-thorn-${name.replace(/[^a-z0-9]/gi,'-').toLowerCase()}.txt`
+  });
+  a.click(); showToast('📄 Export downloaded!');
 }
 
 /* ─── Char counter ──────────────────────────────────────── */
@@ -1041,18 +2245,14 @@ function hide(id) { document.getElementById(id).style.display = 'none'; }
 
 function showToast(msg, dur=2600) {
   const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
+  t.textContent = msg; t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), dur);
 }
 
 function esc(s) {
   return String(s||'')
-    .replace(/&/g,'&amp;')
-    .replace(/</g,'&lt;')
-    .replace(/>/g,'&gt;')
-    .replace(/"/g,'&quot;')
-    .replace(/\n/g,'<br>');
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/\n/g,'<br>');
 }
 
 function fmtDate(ts) {
@@ -1060,9 +2260,13 @@ function fmtDate(ts) {
   return new Date(ts).toLocaleDateString('en-GB',{ day:'numeric', month:'short', year:'numeric' });
 }
 
-// Keyboard shortcut: Ctrl+Enter to submit
 document.addEventListener('keydown', e => {
-  if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) addNote();
+  if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+    if (document.getElementById('page-wall').style.display !== 'none') addNote();
+    if (document.getElementById('page-rbt').style.display !== 'none') addRBTResponse();
+    if (document.getElementById('page-ps').style.display !== 'none') addPS();
+    if (document.getElementById('page-utt').style.display !== 'none') addUTT();
+  }
 });
 </script>
 </body>
