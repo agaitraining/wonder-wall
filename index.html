@@ -1494,7 +1494,14 @@ window.addEventListener('load', () => {
   }
   const params = new URLSearchParams(window.location.search);
   const s = params.get('s');
-  if (s) { routeToSession(s); } else { routeToDashboard(); }
+  if (s) {
+    routeToSession(s);
+  } else if (params.get('k') === 'specialist-access') {
+    routeToDashboard();
+  } else {
+    hide('page-loading');
+    document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;min-height:100vh;background:#120f0c;color:#888;font-family:Inter,sans-serif;font-size:14px;">Access not found.</div>';
+  }
 });
 
 /* ─── Routing ────────────────────────────────────────────── */
